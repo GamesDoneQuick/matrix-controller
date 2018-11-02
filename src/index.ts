@@ -1,3 +1,4 @@
+/// <reference path="types/serialport--bindings.d.ts" />
 /// <reference path="types/serialport--parser-readline.d.ts" />
 /// <reference path="types/serialport--stream.d.ts" />
 'use strict';
@@ -9,13 +10,17 @@ import * as http from 'http';
 import * as express from 'express';
 import * as socketIO from 'socket.io';
 import * as SerialPort from '@serialport/stream';
+import * as Binding from '@serialport/bindings';
 import * as Readline from '@serialport/parser-readline';
 
 // Ours
 import config from './config';
 
-const OUTPUT_REGEX = /\d{2}/g;
+if (process.env.NODE_ENV !== 'test') {
+	SerialPort.Binding = Binding;
+}
 
+const OUTPUT_REGEX = /\d{2}/g;
 const app = express();
 const server = new http.Server(app);
 const io = socketIO(server);

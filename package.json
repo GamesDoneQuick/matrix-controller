@@ -29,6 +29,7 @@
     "static": "tslint -c tslint.json 'src/**/*.ts' test.ts"
   },
   "dependencies": {
+    "@serialport/bindings": "^2.0.2",
     "@serialport/parser-readline": "^2.0.1",
     "@serialport/stream": "^2.0.1",
     "convict": "^4.4.0",

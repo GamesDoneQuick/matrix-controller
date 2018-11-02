@@ -18,10 +18,5 @@
 	  "check-format",
 	  "allow-leading-underscore"
 	]
-  },
-  "linterOptions": {
-	"exclude": [
-	  "src/types/schemas/currentIntermission.d.ts"
-	]
   }
 }
