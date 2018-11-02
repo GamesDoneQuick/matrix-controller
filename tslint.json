@@ -1,0 +1,27 @@
+{
+  "extends": "tslint-xo",
+  "rules": {
+	"comment-format": false,
+	"early-exit": false,
+	"no-require-imports": false,
+	"no-single-line-block-comment": false,
+	"no-reference": false,
+	"no-unused-variable": [
+	  true,
+	  {
+		"ignore-pattern": "^_"
+	  }
+	],
+	"variable-name": [
+	  true,
+	  "ban-keywords",
+	  "check-format",
+	  "allow-leading-underscore"
+	]
+  },
+  "linterOptions": {
+	"exclude": [
+	  "src/types/schemas/currentIntermission.d.ts"
+	]
+  }
+}

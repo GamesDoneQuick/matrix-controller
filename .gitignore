@@ -1,0 +1,15 @@
+node_modules
+bower_components
+
+/.idea/compiler.xml
+/.idea/encodings.xml
+/.idea/copyright/profiles_settings.xml
+/.idea/workspace.xml
+.DS_Store
+.idea/shelf/
+
+logs
+data
+
+npm-debug.log
+coverage
