@@ -13,3 +13,4 @@ data
 
 npm-debug.log
 coverage
+/config.json
