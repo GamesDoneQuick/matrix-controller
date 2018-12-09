@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Matrix Controller</title>
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="https://jsplumbtoolkit.com/lib/jsplumb.min.js"></script>
+	<link rel="stylesheet" href="defaults.css">
+	<style>
+		body {
+			display: flex;
+			font-family: "Lato", sans-serif;
+			font-size: 14px;
+			height: 100vh;
+			justify-content: center;
+			margin: 0;
+			user-select: none;
+			width: 100vw;
+		}
+
+		#canvas {
+			align-items: center;
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+		}
+
+		#outputs,
+		#inputs {
+			display: flex;
+		}
+
+		.window {
+			align-items: center;
+			color: white;
+			display:flex;
+			flex: 1;
+			font-weight: bold;
+			height: 100px;
+			justify-content: center;
+			margin: 0 3px;
+			padding: 0.5em;
+			text-align: center;
+		}
+
+		.window:first-child {
+			margin-left: 0;
+		}
+
+		.window:last-child {
+			margin-right: 0;
+		}
+
+		#outputs .window {
+			background-color: #558822;
+		}
+
+		#inputs .window {
+			background-color: #0d78bc;
+		}
+
+		/** JSPLUMB ARTEFACTS **/
+		.jtk-endpoint {
+			z-index: 32;
+		}
+
+		path, .jtk-endpoint {
+			cursor: pointer;
+		}
+
+		/* ENDPOINT STYLES */
+		.large-green circle {
+			fill:#558822;
+		}
+
+		.small-blue circle {
+			fill:#0d78bc;
+		}
+
+		/* ---------------------------------------------------------------------------------------------------- */
+		/* --- jsPlumb setup ---------------------------------------------------------------------------------- */
+		/* ---------------------------------------------------------------------------------------------------- */
+
+		.jtk-connector {
+			z-index:9;
+		}
+
+		.jtk-connector:hover, .jtk-connector.jtk-hover {
+			z-index:10;
+		}
+
+		.jtk-endpoint {
+			z-index:12;
+			opacity:0.8;
+			cursor:pointer;
+		}
+
+		path {
+			cursor:pointer;
+		}
+
+		.connect {
+			width:10px;
+			height:10px;
+			background-color:#f76258;
+			position:absolute;
+			bottom: 13px;
+			right: 5px;
+		}
+
+		.jtk-node {
+			background-color: #5184a0;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 12px;
+			position: absolute;
+			z-index: 11;
+			min-width:80px;
+			min-height:30px;
+			width: auto;
+		}
+
+		.jtk-node .name {
+			color: white;
+			cursor: move;
+			font-size: 13px;
+			line-height: 24px;
+			padding: 6px;
+			text-align: center;
+		}
+
+		.jtk-node .name span {
+			cursor:pointer;
+		}
+
+		[undo], [redo] { background-color:darkgray !important; }
+		[can-undo='true'] [undo], [can-redo='true'] [redo] { background-color: #3E7E9C  !important; }
+	</style>
+</head>
+<body>
+	<div id="canvas" class="jtk-surface jtk-surface-nopan">
+		<div id="outputs">
+			<div class="window">Output 1</div>
+			<div class="window">Output 2</div>
+			<div class="window">Output 3</div>
+			<div class="window">Output 4</div>
+			<div class="window">Output 5</div>
+			<div class="window">Output 6</div>
+			<div class="window">Output 7</div>
+			<div class="window">Output 8</div>
+		</div>
+
+		<div id="inputs">
+			<div class="window">Input 1</div>
+			<div class="window">Input 2</div>
+			<div class="window">Input 3</div>
+			<div class="window">Input 4</div>
+			<div class="window">Input 5</div>
+			<div class="window">Input 6</div>
+			<div class="window">Input 7</div>
+			<div class="window">Input 8</div>
+		</div>
+	</div>
+	<script src="app.js"></script>
+</body>
+</html>

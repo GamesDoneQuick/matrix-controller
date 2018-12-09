@@ -1,0 +1,13 @@
+{
+  "extends": "xo",
+  "env": {
+	"browser": true
+  },
+  "plugins": [
+	"html"
+  ],
+  "globals": {
+	"jsPlumb": true,
+	"io": true
+  }
+}

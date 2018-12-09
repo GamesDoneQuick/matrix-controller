@@ -42,9 +42,7 @@ export const enum SOCKET_MESSAGES {
 	OUTPUT_STATUSES = 'OUTPUT_STATUSES'
 }
 
-app.get('/', (_req, res) => {
-	res.send('<h1>Jacked up and good to go.</h1>');
-});
+app.use(express.static('public'));
 
 server.listen(config.get('port'), () => {
 	console.log(`listening on *:${config.get('port')}`);

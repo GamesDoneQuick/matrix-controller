@@ -14,6 +14,9 @@
     "@types/serialport": "^7.0.0",
     "@types/socket.io": "^1.4.38",
     "@types/socket.io-client": "^1.4.32",
+    "eslint": "^5.8.0",
+    "eslint-config-xo": "^0.25.0",
+    "eslint-plugin-html": "^4.0.6",
     "jest": "^23.6.0",
     "socket.io-client": "^2.1.1",
     "ts-jest": "^23.10.4",
@@ -26,7 +29,9 @@
     "start": "ts-node src/index.ts",
     "pretest": "npm run static",
     "test": "jest --coverage",
-    "static": "tslint -c tslint.json 'src/**/*.ts' test.ts"
+    "static": "npm run static:js && npm run static:ts",
+    "static:js": "eslint public/**/*.js public/**/*.html",
+    "static:ts": "tslint -c tslint.json 'src/**/*.ts' test.ts"
   },
   "dependencies": {
     "@serialport/bindings": "^2.0.2",
