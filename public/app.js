@@ -23,6 +23,20 @@
 			Container: 'canvas'
 		});
 
+		// Before new connection is created.
+		instance.bind('beforeDrop', function (ci) {
+			// Get all source el. connection(s) except the new connection which is being established.
+			const existingConnections = instance.getConnections({target: ci.targetId});
+			if (existingConnections.length > 0) {
+				for (let i = 0; i < existingConnections.length; i++) {
+					instance.deleteConnection(existingConnections[i]);
+				}
+			}
+
+			// True for establishing new connection.
+			return true;
+		});
+
 		// Bind to a connection event, just for the purposes of pointing out that it can be done.
 		instance.bind('connection', (...args) => {
 			console.log('connection', ...args);
@@ -34,7 +48,7 @@
 				isSource: false,
 				isTarget: true,
 				endpoint: ENDPOINT_STYLE,
-				maxConnections: 1
+				maxConnections: 2
 			});
 			endpointMap.set(outputEl, endpoint);
 		});
