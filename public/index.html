@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<title>Matrix Controller</title>
 	<script src="/socket.io/socket.io.js"></script>
-	<script src="https://jsplumbtoolkit.com/lib/jsplumb.min.js"></script>
+	<script src="/node_modules/jsplumb/dist/js/jsplumb.min.js"></script>
 	<link rel="stylesheet" href="defaults.css">
 	<style>
 		body {
@@ -12,14 +12,14 @@
 			font-family: "Lato", sans-serif;
 			font-size: 14px;
 			height: 100vh;
-			justify-content: center;
 			margin: 0;
 			user-select: none;
 			width: 100vw;
 		}
 
 		#canvas {
-			align-items: center;
+			flex-grow: 1;
+			align-items: stretch;
 			display: flex;
 			flex-direction: column;
 			justify-content: space-between;
@@ -161,6 +161,6 @@
 			<div class="window">Input 8</div>
 		</div>
 	</div>
-	<script src="app.js"></script>
+	<script src="app.js" type="module"></script>
 </body>
 </html>

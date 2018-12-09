@@ -1,6 +1,6 @@
-/// <reference path="types/serialport--bindings.d.ts" />
-/// <reference path="types/serialport--parser-readline.d.ts" />
-/// <reference path="types/serialport--stream.d.ts" />
+/// <reference path="../types/serialport--bindings.d.ts" />
+/// <reference path="../types/serialport--parser-readline.d.ts" />
+/// <reference path="../types/serialport--stream.d.ts" />
 'use strict';
 
 // Native
@@ -12,9 +12,11 @@ import * as socketIO from 'socket.io';
 import * as SerialPort from '@serialport/stream';
 import * as Binding from '@serialport/bindings';
 import * as Readline from '@serialport/parser-readline';
+import transformMiddleware from 'express-transform-bare-module-specifiers';
 
 // Ours
 import config from './config';
+import {SOCKET_MESSAGES} from '../types/socket';
 
 if (process.env.NODE_ENV !== 'test') {
 	SerialPort.Binding = Binding;
@@ -36,12 +38,8 @@ const state = {
 	outputs: [0, 1, 2, 3, 4, 5, 6, 7]
 };
 
-export const enum SOCKET_MESSAGES {
-	SET_OUTPUT = 'SET_OUTPUT',
-	GET_OUTPUTS = 'GET_OUTPUTS',
-	OUTPUT_STATUSES = 'OUTPUT_STATUSES'
-}
-
+app.use('*', transformMiddleware());
+app.use('/node_modules', express.static('node_modules'));
 app.use(express.static('public'));
 
 server.listen(config.get('port'), () => {

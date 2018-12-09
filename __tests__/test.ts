@@ -1,5 +1,5 @@
-/// <reference path="../src/types/serialport--binding-mock.d.ts" />
-/// <reference path="../src/types/serialport--stream.d.ts" />
+/// <reference path="../types/serialport--binding-mock.d.ts" />
+/// <reference path="../types/serialport--stream.d.ts" />
 
 const MOCK_SERIAL_PATH = '/dev/AVA';
 process.env.SERIAL_PATH = MOCK_SERIAL_PATH;
@@ -11,12 +11,14 @@ import * as SocketIOClient from 'socket.io-client';
 
 // Ours
 import config from '../src/config';
+import {SOCKET_MESSAGES} from '../types/socket';
 
 SerialPort.Binding = MockBinding;
 MockBinding.createPort(MOCK_SERIAL_PATH, {echo: false, record: true});
 
 // Import the library under test once our mocks are set up.
-import {serialport, stop, SOCKET_MESSAGES} from '../src';
+import {serialport, stop} from '../src';
+
 let clientSocket: SocketIOClient.Socket;
 
 beforeAll(done => {

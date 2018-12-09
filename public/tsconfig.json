@@ -1,0 +1,25 @@
+{
+  "extends": "@supportclass/tsconfig-base",
+  "compilerOptions": {
+	"baseUrl": "./",
+	"paths": {
+	  "*": [
+		"../node_modules/*"
+	  ]
+	},
+	"lib": [
+	  "dom",
+	  "es2017"
+	],
+	"pretty": true,
+	"sourceMap": true,
+	"declaration": true
+  },
+  "include": [
+	"app.ts"
+  ],
+  "exclude": [
+	"../node_modules/**",
+	"../src/**"
+  ]
+}

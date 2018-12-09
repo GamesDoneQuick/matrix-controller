@@ -1,3 +1,4 @@
+import { jsPlumb } from 'jsplumb';
 const ENDPOINT_RADIUS = 20;
 const PAINT_STYLE = {
     gradient: {

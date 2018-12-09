@@ -7,6 +7,7 @@
   "license": "MIT",
   "devDependencies": {
     "@serialport/binding-mock": "^2.0.1",
+    "@supportclass/tsconfig-base": "^1.0.2",
     "@types/convict": "^4.2.0",
     "@types/express": "^4.16.0",
     "@types/jest": "^23.3.9",
@@ -14,24 +15,23 @@
     "@types/serialport": "^7.0.0",
     "@types/socket.io": "^1.4.38",
     "@types/socket.io-client": "^1.4.32",
-    "eslint": "^5.8.0",
-    "eslint-config-xo": "^0.25.0",
-    "eslint-plugin-html": "^4.0.6",
     "jest": "^23.6.0",
     "socket.io-client": "^2.1.1",
     "ts-jest": "^23.10.4",
     "ts-node": "^7.0.1",
     "tslint": "^5.11.0",
     "tslint-xo": "^0.9.0",
-    "typescript": "^3.1.5"
+    "typescript": "^3.2.1"
   },
   "scripts": {
     "start": "ts-node src/index.ts",
     "pretest": "npm run static",
     "test": "jest --coverage",
-    "static": "npm run static:js && npm run static:ts",
-    "static:js": "eslint public/**/*.js public/**/*.html",
-    "static:ts": "tslint -c tslint.json 'src/**/*.ts' test.ts"
+    "static": "tslint -c tslint.json 'src/**/*.ts' public/app.ts '__tests__/**/*.ts'",
+    "prebuild": "npm run static",
+    "build": "tsc -p public/tsconfig.json",
+    "postbuild": "sed -i~ 1d public/app.js",
+    "watch": "tsc -p public/tsconfig.json --watch"
   },
   "dependencies": {
     "@serialport/bindings": "^2.0.2",
@@ -39,6 +39,8 @@
     "@serialport/stream": "^2.0.1",
     "convict": "^4.4.0",
     "express": "^4.16.4",
+    "express-transform-bare-module-specifiers": "^1.0.2",
+    "jsplumb": "^2.8.5",
     "socket.io": "^2.1.1"
   }
 }
