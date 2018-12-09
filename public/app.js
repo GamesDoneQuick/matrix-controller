@@ -63,7 +63,8 @@
 				console.log(`output ${outputIndex} gets input ${input}`);
 				jsPlumb.connect({
 					source: endpointMap.get(document.querySelector(`#inputs .window:nth-child(${input + 1})`)),
-					target: endpointMap.get(document.querySelector(`#outputs .window:nth-child(${outputIndex + 1})`))
+					target: endpointMap.get(document.querySelector(`#outputs .window:nth-child(${outputIndex + 1})`)),
+					paintStyle: PAINT_STYLE
 				});
 			});
 		});
