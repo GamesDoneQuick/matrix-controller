@@ -55,16 +55,15 @@
 		const socket = io();
 		socket.on('OUTPUT_STATUSES', outputs => {
 			document.querySelectorAll('#outputs .window').forEach(element => {
-				jsPlumb.deleteConnectionsForElement(element);
+				instance.deleteConnectionsForElement(element);
 			});
 
 			console.log('OUTPUT_STATUSES:', outputs);
 			outputs.forEach((input, outputIndex) => {
 				console.log(`output ${outputIndex} gets input ${input}`);
-				jsPlumb.connect({
+				instance.connect({
 					source: endpointMap.get(document.querySelector(`#inputs .window:nth-child(${input + 1})`)),
-					target: endpointMap.get(document.querySelector(`#outputs .window:nth-child(${outputIndex + 1})`)),
-					paintStyle: PAINT_STYLE
+					target: endpointMap.get(document.querySelector(`#outputs .window:nth-child(${outputIndex + 1})`))
 				});
 			});
 		});
