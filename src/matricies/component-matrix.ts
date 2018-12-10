@@ -4,10 +4,10 @@ import config from '../config';
 
 const OUTPUT_REGEX = /\d{2}/g;
 
-export class HdmiMatrix extends AbstractMatrix {
+export class ComponentMatrix extends AbstractMatrix {
 	// Serial connection
-	serialPortPath = config.get('hdmiSerialPath');
-	baudRate = 57600;
+	serialPortPath = config.get('componentSerialPath');
+	baudRate = 9600;
 
 	// Serial protocol
 	fullUpdateTriggers = [
