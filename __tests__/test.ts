@@ -34,7 +34,18 @@ afterEach(() => {
 	serialport.write('\r\n');
 });
 
-test('requests full update when the serialport opens', () => {
+test('requests full update when the serialport opens', async () => {
+	await sleep(100);
+	expect(serialport.binding.lastWrite.toString()).toBe('>@R8006\r\n');
+});
+
+test('requests full update after receiving the startup sequence', async () => {
+	serialport.binding.emitData('==================================\r\n');
+	serialport.binding.emitData('V1.0\r\n');
+	serialport.binding.emitData('Data:Jan 16 2016\r\n');
+	serialport.binding.emitData('Time:15:39:34\r\n');
+	serialport.binding.emitData('==================================\r\n');
+	await sleep(100);
 	expect(serialport.binding.lastWrite.toString()).toBe('>@R8006\r\n');
 });
 
@@ -61,15 +72,22 @@ test('responds to GET_OUTPUTS with OUTPUT_STATUSES', done => {
 	clientSocket.emit(SOCKET_MESSAGES.GET_OUTPUTS);
 });
 
-test('writes the correct serial command when SET_OUTPUT is invoked', done => {
+test('writes the correct serial command when SET_OUTPUT is invoked', async () => {
+	await sleep(50);
 	clientSocket.emit(SOCKET_MESSAGES.SET_OUTPUT, 0, 7);
-	setTimeout(() => {
-		expect(serialport.binding.lastWrite.toString()).toBe('>@WVSO[01]I[08]\r\n');
-		done();
-	}, 50);
+	await sleep(50);
+	expect(serialport.binding.lastWrite.toString()).toBe('>@WVSO[01]I[08]\r\n');
 });
 
 afterAll(done => {
 	clientSocket.close();
 	stop(done);
 });
+
+async function sleep(milliseconds: number) {
+	return new Promise(resolve => {
+		setTimeout(() => {
+			resolve();
+		}, milliseconds);
+	});
+}

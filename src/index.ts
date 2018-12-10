@@ -12,6 +12,7 @@ import * as socketIO from 'socket.io';
 import * as SerialPort from '@serialport/stream';
 import * as Binding from '@serialport/bindings';
 import * as Readline from '@serialport/parser-readline';
+import debounce = require('lodash.debounce');
 import transformMiddleware from 'express-transform-bare-module-specifiers';
 
 // Ours
@@ -37,6 +38,11 @@ const parser = serialport.pipe(new Readline({delimiter: '\r\n'}));
 const state = {
 	outputs: [0, 1, 2, 3, 4, 5, 6, 7]
 };
+
+const requestFullUpdate = debounce(() => {
+	console.log('request full update!!!');
+	serialport.write('>@R8006\r\n');
+}, 35);
 
 app.use('*', transformMiddleware());
 app.use('/node_modules', express.static('node_modules'));
@@ -88,15 +94,10 @@ parser.on('data', (data: String) => {
 			// Inform all clients of the update.
 			io.emit(SOCKET_MESSAGES.OUTPUT_STATUSES, state.outputs);
 		}
-	} else if (data.startsWith('<@WVSO')) {
+	} else if (data.startsWith('<@WVSO') || data === '==================================') {
 		requestFullUpdate();
 	}
 });
-
-function requestFullUpdate() {
-	console.log('request full update!!!');
-	serialport.write('>@R8006\r\n');
-}
 
 function validateAndClamp(unparsed: unknown) {
 	let parsed: number;
