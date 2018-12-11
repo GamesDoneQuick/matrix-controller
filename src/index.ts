@@ -2,12 +2,14 @@
 
 // Native
 import * as http from 'http';
+
 // Packages
 import * as express from 'express';
 import * as socketIO from 'socket.io';
 import * as SerialPort from '@serialport/stream';
 import * as Binding from '@serialport/bindings';
 import transformMiddleware from 'express-transform-bare-module-specifiers';
+
 // Ours
 import config from './config';
 import {SOCKET_MESSAGES} from '../types/socket';
