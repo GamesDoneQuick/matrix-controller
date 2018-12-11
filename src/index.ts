@@ -132,8 +132,8 @@ function validateAndClamp(unparsed: unknown, max: number) {
 
 function updateState() {
 	for (let i = 0; i <= state.outputs.length; i++) {
-		if (hdmiMatrix.state.outputs[i] < 4) {
-			// HDMI input
+		const input = state.outputs[i];
+		if (isHdmiInput(input)) {
 			state.outputs[i] = hdmiMatrix.state.outputs[i];
 		} else {
 			// Component or SCART input
