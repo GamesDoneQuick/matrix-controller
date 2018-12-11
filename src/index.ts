@@ -2,20 +2,18 @@
 
 // Native
 import * as http from 'http';
-
 // Packages
 import * as express from 'express';
 import * as socketIO from 'socket.io';
 import * as SerialPort from '@serialport/stream';
 import * as Binding from '@serialport/bindings';
 import transformMiddleware from 'express-transform-bare-module-specifiers';
-
 // Ours
 import config from './config';
 import {SOCKET_MESSAGES} from '../types/socket';
 import {HdmiMatrix} from './matricies/hdmi-matrix';
 import {ComponentMatrix} from './matricies/component-matrix';
-import {OUT, IN, HDMI_OUT, HDMI_IN, COMP_OUT, COMP_IN} from '../types/matrix-mappings';
+import {COMP_OUT, HDMI_IN, IN, OUT} from '../types/matrix-mappings';
 
 if (process.env.NODE_ENV !== 'test') {
 	SerialPort.Binding = Binding;
@@ -54,21 +52,25 @@ io.on('connection', socket => {
 	});
 
 	socket.on(SOCKET_MESSAGES.SET_OUTPUT, (unparsedOutput: unknown, unparsedInput: unknown) => {
-		const output = validateAndClamp(unparsedOutput, Object.keys(OUT).length);
-		const input = validateAndClamp(unparsedInput, Object.keys(IN).length);
+		const output = validateAndClamp(unparsedOutput, Object.keys(OUT).length - 1) as OUT;
+		const input = validateAndClamp(unparsedInput, Object.keys(IN).length - 1) as IN;
 
 		if (isHdmiInput(input)) {
-			hdmiMatrix.setOutput(output, input + 4);
+			const offset = HDMI_IN.HD_1 - IN.HDMI_1;
+			hdmiMatrix.setOutput(output, input + offset);
 		} else if (isComponentInput(input)) {
-			componentMatrix.setOutput(output, input - 4);
+			const osscOutput = calcOsscOutput(input);
+			console.log('input: %s, output: %s, osscOutput: %s', input, output, osscOutput);
+			componentMatrix.setOutput(osscOutput, input - 4);
 			hdmiMatrix.setOutput(output, input - 4);
 		} else { // SCART input
-			componentMatrix.setOutput(output, input - 4);
+			const osscOutput = calcOsscOutput(input);
+			componentMatrix.setOutput(osscOutput, input - 4);
 			hdmiMatrix.setOutput(output, input - 8);
 		}
 
 		if (isTvOutput(output) && (isComponentInput(input) || isScartInput(input))) {
-			componentMatrix.setOutput(output - 4, input - 4);
+			componentMatrix.setOutput(output, input - 4);
 		}
 	});
 });
@@ -82,11 +84,23 @@ function isComponentInput(input: number) {
 }
 
 function isScartInput(input: number) {
-	return input >= IN.SCART_1 && input <= IN.SCART_2;
+	return input >= IN.SCART_1 && input <= IN.SCART_4;
 }
 
 function isTvOutput(output: number) {
 	return output >= OUT.TV_1 && output <= OUT.TV_4;
+}
+
+function calcOsscOutput(input: IN) {
+	let osscOutput = COMP_OUT.OSSC_1;
+	if (input === IN.COMP_2 || input === IN.SCART_2) {
+		osscOutput = COMP_OUT.OSSC_2;
+	} else if (input === IN.COMP_3 || input === IN.SCART_3) {
+		osscOutput = COMP_OUT.OSSC_3;
+	} else if (input === IN.COMP_4 || input === IN.SCART_4) {
+		osscOutput = COMP_OUT.OSSC_4;
+	}
+	return osscOutput;
 }
 
 function validateAndClamp(unparsed: unknown, max: number) {

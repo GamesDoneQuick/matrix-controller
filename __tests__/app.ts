@@ -86,9 +86,8 @@ test('calls setOutput on the matrix instances when SET_OUTPUT is invoked', async
 		const hdmiStub = sinon.stub(hdmiMatrix, 'setOutput');
 		const componentStub = sinon.stub(componentMatrix, 'setOutput');
 
-		for (let i = 0; i < testCases.length; i++) {
+		for (let i = 0; i < testCases.length; i++) { // tslint:disable-line:prefer-for-of
 			const testCase = testCases[i];
-			console.log('test #%s:', i, testCase);
 
 			// Reset state.
 			hdmiStub.reset();
