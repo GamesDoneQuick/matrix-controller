@@ -49,10 +49,10 @@ io.on('connection', socket => {
 	console.log('a user connected');
 
 	// Initialize with the status of each output.
-	socket.emit(SOCKET_MESSAGES.OUTPUT_STATUSES, hdmiMatrix.state.outputs);
+	socket.emit(SOCKET_MESSAGES.OUTPUT_STATUSES, state.outputs);
 
 	socket.on(SOCKET_MESSAGES.GET_OUTPUTS, () => {
-		socket.emit(SOCKET_MESSAGES.OUTPUT_STATUSES, hdmiMatrix.state.outputs);
+		socket.emit(SOCKET_MESSAGES.OUTPUT_STATUSES, state.outputs);
 	});
 
 	socket.on(SOCKET_MESSAGES.SET_OUTPUT, (unparsedOutput: unknown, unparsedInput: unknown) => {
