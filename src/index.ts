@@ -148,27 +148,14 @@ function _updateState() {
 			computedOutput = IN.HDMI_3;
 		} else if (hdmiInput === HDMI_IN.HD_4) {
 			computedOutput = IN.HDMI_4;
-		} else {
-			// Component or SCART input.
-			// Pass-through to component matrix.
-			const compInput = componentMatrix.state.outputs[outputChannel];
-			if (compInput === COMP_IN.COMP_1) {
-				computedOutput = IN.COMP_1;
-			} else if (compInput === COMP_IN.COMP_2) {
-				computedOutput = IN.COMP_2;
-			} else if (compInput === COMP_IN.COMP_3) {
-				computedOutput = IN.COMP_3;
-			} if (compInput === COMP_IN.COMP_4) {
-				computedOutput = IN.COMP_4;
-			} else if (compInput === COMP_IN.SCART_1) {
-				computedOutput = IN.SCART_1;
-			} else if (compInput === COMP_IN.SCART_2) {
-				computedOutput = IN.SCART_2;
-			} else if (compInput === COMP_IN.SCART_3) {
-				computedOutput = IN.SCART_3;
-			} else if (compInput === COMP_IN.SCART_4) {
-				computedOutput = IN.SCART_4;
-			}
+		} else if (hdmiInput === HDMI_IN.OSSC_1) {
+			computedOutput = hooBoy(componentMatrix.state.outputs[COMP_OUT.OSSC_1]);
+		} else if (hdmiInput === HDMI_IN.OSSC_2) {
+			computedOutput = hooBoy(componentMatrix.state.outputs[COMP_OUT.OSSC_2]);
+		} else if (hdmiInput === HDMI_IN.OSSC_3) {
+			computedOutput = hooBoy(componentMatrix.state.outputs[COMP_OUT.OSSC_3]);
+		} else if (hdmiInput === HDMI_IN.OSSC_4) {
+			computedOutput = hooBoy(componentMatrix.state.outputs[COMP_OUT.OSSC_4]);
 		}
 
 		state.outputs[outputChannel] = computedOutput;
@@ -180,6 +167,31 @@ function _updateState() {
 	console.log('app state:\t\t\t  ', state);
 	console.log('----------------------------------');
 	io.emit(SOCKET_MESSAGES.OUTPUT_STATUSES, state.outputs);
+}
+
+function hooBoy(compInput: COMP_IN): IN {
+	if (compInput === COMP_IN.COMP_1) {
+		return IN.COMP_1;
+	}
+	if (compInput === COMP_IN.COMP_2) {
+		return IN.COMP_2;
+	}
+	if (compInput === COMP_IN.COMP_3) {
+		return IN.COMP_3;
+	}
+	if (compInput === COMP_IN.COMP_4) {
+		return IN.COMP_4;
+	}
+	if (compInput === COMP_IN.SCART_1) {
+		return IN.SCART_1;
+	}
+	if (compInput === COMP_IN.SCART_2) {
+		return IN.SCART_2;
+	}
+	if (compInput === COMP_IN.SCART_3) {
+		return IN.SCART_3;
+	}
+	return IN.SCART_4;
 }
 
 export function stop(done: Function) {
