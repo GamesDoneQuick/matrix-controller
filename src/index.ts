@@ -9,6 +9,7 @@ import * as socketIO from 'socket.io';
 import * as SerialPort from '@serialport/stream';
 import * as Binding from '@serialport/bindings';
 import transformMiddleware from 'express-transform-bare-module-specifiers';
+import debounce = require('lodash.debounce');
 
 // Ours
 import config from './config';
@@ -24,6 +25,7 @@ if (process.env.NODE_ENV !== 'test') {
 const app = express();
 const server = new http.Server(app);
 const io = socketIO(server);
+const updateState = debounce(_updateState, 250);
 
 export const hdmiMatrix = new HdmiMatrix();
 export const componentMatrix = new ComponentMatrix();
@@ -132,7 +134,7 @@ function validateAndClamp(unparsed: unknown, max: number) {
 	return parsed;
 }
 
-function updateState() {
+function _updateState() {
 	const len = state.outputs.length;
 	for (let outputChannel = 0; outputChannel < len; outputChannel++) {
 		let computedOutput = 0;
