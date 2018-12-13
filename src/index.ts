@@ -15,7 +15,7 @@ import config from './config';
 import {SOCKET_MESSAGES} from '../types/socket';
 import {HdmiMatrix} from './matricies/hdmi-matrix';
 import {ComponentMatrix} from './matricies/component-matrix';
-import {COMP_OUT, HDMI_IN, IN, OUT} from '../types/matrix-mappings';
+import {COMP_IN, COMP_OUT, HDMI_IN, IN, OUT} from '../types/matrix-mappings';
 
 if (process.env.NODE_ENV !== 'test') {
 	SerialPort.Binding = Binding;
@@ -56,6 +56,8 @@ io.on('connection', socket => {
 	socket.on(SOCKET_MESSAGES.SET_OUTPUT, (unparsedOutput: unknown, unparsedInput: unknown) => {
 		const output = validateAndClamp(unparsedOutput, Object.keys(OUT).length - 1) as OUT;
 		const input = validateAndClamp(unparsedInput, Object.keys(IN).length - 1) as IN;
+		console.log('SET_OUTPUT | unparsedOutput: %s, unparsedInput: %s', unparsedOutput, unparsedInput);
+		console.log('SET_OUTPUT | output: %s, input: %s', output, input);
 
 		if (isHdmiInput(input)) {
 			const offset = HDMI_IN.HD_1 - IN.HDMI_1;
@@ -131,16 +133,50 @@ function validateAndClamp(unparsed: unknown, max: number) {
 }
 
 function updateState() {
-	for (let i = 0; i <= state.outputs.length; i++) {
-		const input = state.outputs[i];
-		if (isHdmiInput(input)) {
-			state.outputs[i] = hdmiMatrix.state.outputs[i];
+	const len = state.outputs.length;
+	for (let outputChannel = 0; outputChannel < len; outputChannel++) {
+		let computedOutput = 0;
+
+		const hdmiInput = hdmiMatrix.state.outputs[outputChannel];
+		if (hdmiInput === HDMI_IN.HD_1) {
+			computedOutput = IN.HDMI_1	;
+		} else if (hdmiInput === HDMI_IN.HD_2) {
+			computedOutput = IN.HDMI_2;
+		} else if (hdmiInput === HDMI_IN.HD_3) {
+			computedOutput = IN.HDMI_3;
+		} else if (hdmiInput === HDMI_IN.HD_4) {
+			computedOutput = IN.HDMI_4;
 		} else {
-			// Component or SCART input
-			state.outputs[i] = componentMatrix.state.outputs[i] + 4;
+			// Component or SCART input.
+			// Pass-through to component matrix.
+			const compInput = componentMatrix.state.outputs[outputChannel];
+			if (compInput === COMP_IN.COMP_1) {
+				computedOutput = IN.COMP_1;
+			} else if (compInput === COMP_IN.COMP_2) {
+				computedOutput = IN.COMP_2;
+			} else if (compInput === COMP_IN.COMP_3) {
+				computedOutput = IN.COMP_3;
+			} if (compInput === COMP_IN.COMP_4) {
+				computedOutput = IN.COMP_4;
+			} else if (compInput === COMP_IN.SCART_1) {
+				computedOutput = IN.SCART_1;
+			} else if (compInput === COMP_IN.SCART_2) {
+				computedOutput = IN.SCART_2;
+			} else if (compInput === COMP_IN.SCART_3) {
+				computedOutput = IN.SCART_3;
+			} else if (compInput === COMP_IN.SCART_4) {
+				computedOutput = IN.SCART_4;
+			}
 		}
+
+		state.outputs[outputChannel] = computedOutput;
 	}
 
+	console.log('----------------------------------');
+	console.log('hdmiMatrix state:\t  ', hdmiMatrix.state);
+	console.log('componentMatrix state:', componentMatrix.state);
+	console.log('app state:\t\t\t  ', state);
+	console.log('----------------------------------');
 	io.emit(SOCKET_MESSAGES.OUTPUT_STATUSES, state.outputs);
 }
 

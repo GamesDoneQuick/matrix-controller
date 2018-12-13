@@ -1,5 +1,6 @@
 /// <reference path="../../types/serialport--bindings.d.ts" />
 /// <reference path="../../types/serialport--parser-readline.d.ts" />
+/// <reference path="../../types/serialport--parser-byte-length.d.ts" />
 /// <reference path="../../types/serialport--stream.d.ts" />
 
 // Native
@@ -8,6 +9,7 @@ import {EventEmitter} from 'events';
 // Packages
 import * as SerialPort from '@serialport/stream';
 import * as Readline from '@serialport/parser-readline';
+import * as ByteLength from '@serialport/parser-byte-length';
 import * as Binding from '@serialport/bindings';
 import debounce = require('lodash.debounce');
 
@@ -27,6 +29,8 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 export abstract class AbstractMatrix extends EventEmitter {
+	abstract name: string;
+
 	// Serial connection
 	abstract serialPortPath: string;
 	abstract baudRate: number;
@@ -37,10 +41,11 @@ export abstract class AbstractMatrix extends EventEmitter {
 	parser: any; // No typedefs for @serialport packages yet :/
 
 	// Serial protocol
-	abstract fullUpdateTriggers: RegExp[];
-	abstract fullUpdateRequest: string;
-	abstract fullUpdateResponse: RegExp;
+	abstract fullUpdateTriggers: RegExp[] | null;
+	abstract fullUpdateRequest: string | null;
+	abstract fullUpdateResponse: RegExp | null;
 	delimiter = '\r\n';
+	byteLength: number;
 
 	// Physical properties
 	numInputs = 8;
@@ -54,9 +59,13 @@ export abstract class AbstractMatrix extends EventEmitter {
 	abstract setOutput(output: number, input: number): void;
 
 	requestFullUpdate() {
+		if (!this.fullUpdateRequest) {
+			return;
+		}
+
 		if (!this._debouncedRequestFullUpdate) {
 			this._debouncedRequestFullUpdate = debounce(() => {
-				console.log('request full update!!!');
+				console.log(`${this.name} | request full update!!!`);
 				this.serialport.write(this.fullUpdateRequest + this.delimiter);
 			}, 35);
 		}
@@ -79,36 +88,48 @@ export abstract class AbstractMatrix extends EventEmitter {
 			stopBits: this.stopBits,
 			parity: this.parity
 		});
-		const parser = serialport.pipe(new Readline({delimiter: this.delimiter}));
+
+		// Create parser.
+		// If this.byteLength is defined, use a ByteLength parser.
+		// Else, use a Readline parser.
+		const parser = serialport.pipe(
+			this.byteLength ?
+				new ByteLength({length: this.byteLength}) :
+				new Readline({delimiter: this.delimiter})
+		);
 
 		this.serialport = serialport;
 		this.parser = parser;
 
 		serialport.on('open', async () => {
-			console.log('serialport open, requesting status');
+			console.log(`${this.name} | serialport open, requesting status`);
 			this.requestFullUpdate();
 		});
 
 		serialport.on('error', (error: Error) => {
-			console.error('serialport error:', error);
+			console.error(`${this.name} | serialport error:`, error);
 		});
 
 		serialport.on('close', (error: Error) => {
-			console.error('serialport closed:', error ? error : 'no error');
+			console.error(`${this.name} | serialport closed:`, error ? error : 'no error');
 		});
 
 		/* tslint:disable:brace-style */
-		parser.on('data', (data: string) => {
-			console.log('serialport data:', data);
+		parser.on('data', (unparsedData: any) => {
+			const data = typeof unparsedData === 'string' ?
+				unparsedData :
+				unparsedData.toString();
+
+			console.log(`${this.name} | serialport data:`, data);
 
 			// If the command is a full update...
-			if (this.fullUpdateResponse.test(data)) {
+			if (this.fullUpdateResponse && this.fullUpdateResponse.test(data)) {
 				this.state.outputs = this.processFullUpdate(data);
 				this.emit(SOCKET_MESSAGES.OUTPUT_STATUSES, this.state.outputs);
 			}
 
 			// Else if the command is one that means we should request a full update...
-			else if (this.fullUpdateTriggers.some(trigger => trigger.test(data))) {
+			else if (this.fullUpdateTriggers && this.fullUpdateTriggers.some(trigger => trigger.test(data))) {
 				this.requestFullUpdate();
 			}
 		});
