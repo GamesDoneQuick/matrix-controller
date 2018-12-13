@@ -25,7 +25,7 @@ const conf = convict({
 	}
 });
 
-if (fs.existsSync('./config.json')) {
+if (fs.existsSync('./config.json') && process.env.NODE_ENV !== 'test') {
 	conf.loadFile('./config.json');
 }
 
