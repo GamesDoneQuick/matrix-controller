@@ -28,6 +28,7 @@
   },
   "scripts": {
     "start": "ts-node src/index.ts",
+    "debug": "node --inspect -r ts-node/register src/index.ts",
     "pretest": "npm run static",
     "test": "jest --coverage",
     "static": "tslint -c tslint.json 'src/**/*.ts' public/app.ts '__tests__/**/*.ts'",
@@ -38,6 +39,7 @@
   },
   "dependencies": {
     "@serialport/bindings": "^2.0.3",
+    "@serialport/parser-byte-length": "^2.0.2",
     "@serialport/parser-readline": "^2.0.2",
     "@serialport/stream": "^2.0.2",
     "convict": "^4.4.0",

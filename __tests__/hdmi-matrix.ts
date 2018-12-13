@@ -1,8 +1,10 @@
 /// <reference path="../types/serialport--binding-mock.d.ts" />
 /// <reference path="../types/serialport--stream.d.ts" />
 
-const MOCK_SERIAL_PATH = '/dev/AVA';
-process.env.SERIAL_PATH = MOCK_SERIAL_PATH;
+const MOCK_HDMI_SERIAL_PATH = '/dev/AVA1';
+const MOCK_COMP_SERIAL_PATH = '/dev/AVA2';
+process.env.HDMI_SERIAL_PATH = MOCK_HDMI_SERIAL_PATH;
+process.env.COMPONENT_SERIAL_PATH = MOCK_HDMI_SERIAL_PATH;
 
 // Packages
 import * as sleep from 'sleep-promise';
@@ -14,7 +16,8 @@ import {HdmiMatrix} from '../src/matricies/hdmi-matrix';
 import {SOCKET_MESSAGES} from '../types/socket';
 
 SerialPort.Binding = MockBinding;
-MockBinding.createPort(MOCK_SERIAL_PATH, {echo: false, record: true});
+MockBinding.createPort(MOCK_HDMI_SERIAL_PATH, {echo: false, record: true});
+MockBinding.createPort(MOCK_COMP_SERIAL_PATH, {echo: false, record: true});
 
 const hdmiMatrix = new HdmiMatrix();
 
