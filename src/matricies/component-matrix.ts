@@ -17,6 +17,7 @@ export class ComponentMatrix extends AbstractMatrix {
 	fullUpdateTriggers = null;
 	fullUpdateRequest = null;
 	fullUpdateResponse = null;
+	delimiter = '';
 
 	constructor() {
 		super();
@@ -24,7 +25,10 @@ export class ComponentMatrix extends AbstractMatrix {
 
 		this.serialport.on('open', async () => {
 			// Reset the matrix to a known state.
-			this.serialport.write('SBALLRST');
+			this._addCommandToQueue('SBALLRST');
+
+			// Lock the front panel so only we can control it via serial.
+			this._addCommandToQueue('SBSYSMLK');
 		});
 
 		this.parser.on('data', (data: string) => {
@@ -38,9 +42,6 @@ export class ComponentMatrix extends AbstractMatrix {
 			} else if (str === 'SBRSTACK') {
 				this.state.outputs = [0, 0, 0, 0, 0, 0, 0, 0];
 				this.emit(SOCKET_MESSAGES.OUTPUT_STATUSES, this.state.outputs);
-
-				// Lock the front panel so only we can control it via serial.
-				this.serialport.write('SBSYSMLK');
 			}
 		});
 	}
@@ -49,7 +50,7 @@ export class ComponentMatrix extends AbstractMatrix {
 		return this.state.outputs;
 	}
 
-	setOutput(output: number, input: number) {
-		return this.serialport.write(`SBI0${input + 1}O0${output + 1}${this.delimiter}`);
+	protected _buildSetOutputCommand(output: number, input: number) {
+		return `SBI0${input + 1}O0${output + 1}`;
 	}
 }

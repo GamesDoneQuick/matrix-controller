@@ -58,7 +58,6 @@ io.on('connection', socket => {
 	socket.on(SOCKET_MESSAGES.SET_OUTPUT, (unparsedOutput: unknown, unparsedInput: unknown) => {
 		const output = validateAndClamp(unparsedOutput, Object.keys(OUT).length - 1) as OUT;
 		const input = validateAndClamp(unparsedInput, Object.keys(IN).length - 1) as IN;
-		console.log('SET_OUTPUT | unparsedOutput: %s, unparsedInput: %s', unparsedOutput, unparsedInput);
 		console.log('SET_OUTPUT | output: %s, input: %s', output, input);
 
 		if (isHdmiInput(input)) {
@@ -66,7 +65,6 @@ io.on('connection', socket => {
 			hdmiMatrix.setOutput(output, input + offset);
 		} else if (isComponentInput(input)) {
 			const osscOutput = calcOsscOutput(input);
-			console.log('input: %s, output: %s, osscOutput: %s', input, output, osscOutput);
 			componentMatrix.setOutput(osscOutput, input - 4);
 			hdmiMatrix.setOutput(output, input - 4);
 		} else { // SCART input
@@ -97,7 +95,7 @@ function isTvOutput(output: number) {
 	return output >= OUT.TV_1 && output <= OUT.TV_4;
 }
 
-function calcOsscOutput(input: IN) {
+function calcOsscOutput(input: IN): COMP_OUT {
 	let osscOutput = COMP_OUT.OSSC_1;
 	if (input === IN.COMP_2 || input === IN.SCART_2) {
 		osscOutput = COMP_OUT.OSSC_2;

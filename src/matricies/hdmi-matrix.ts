@@ -35,7 +35,7 @@ export class HdmiMatrix extends AbstractMatrix {
 		return this.state.outputs;
 	}
 
-	setOutput(output: number, input: number) {
-		return this.serialport.write(`>@WVSO[0${output + 1}]I[0${input + 1}]${this.delimiter}`);
+	protected _buildSetOutputCommand(output: number, input: number) {
+		return `>@WVSO[0${output + 1}]I[0${input + 1}]${this.delimiter}`;
 	}
 }

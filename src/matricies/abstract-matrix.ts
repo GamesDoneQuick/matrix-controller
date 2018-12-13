@@ -54,9 +54,10 @@ export abstract class AbstractMatrix extends EventEmitter {
 	state: AbstractMatrixState;
 
 	private _debouncedRequestFullUpdate?: Function;
+	private readonly _commandQueue: string[] = [];
+	private _waitingForReply = false;
 
 	abstract processFullUpdate(data: string): AbstractMatrixState.Outputs;
-	abstract setOutput(output: number, input: number): void;
 
 	requestFullUpdate() {
 		if (!this.fullUpdateRequest) {
@@ -65,11 +66,15 @@ export abstract class AbstractMatrix extends EventEmitter {
 
 		if (!this._debouncedRequestFullUpdate) {
 			this._debouncedRequestFullUpdate = debounce(() => {
-				console.log(`${this.name} | request full update!!!`);
-				this.serialport.write(this.fullUpdateRequest + this.delimiter);
+				console.log(`${this.name} | requesting full update`);
+				this._addCommandToQueue(this.fullUpdateRequest + this.delimiter);
 			}, 35);
 		}
 		return this._debouncedRequestFullUpdate();
+	}
+
+	setOutput(output: number, input: number) {
+		this._addCommandToQueue(this._buildSetOutputCommand(output, input));
 	}
 
 	protected init() {
@@ -116,6 +121,8 @@ export abstract class AbstractMatrix extends EventEmitter {
 
 		/* tslint:disable:brace-style */
 		parser.on('data', (unparsedData: any) => {
+			this._waitingForReply = false;
+
 			const data = typeof unparsedData === 'string' ?
 				unparsedData :
 				unparsedData.toString();
@@ -132,7 +139,36 @@ export abstract class AbstractMatrix extends EventEmitter {
 			else if (this.fullUpdateTriggers && this.fullUpdateTriggers.some(trigger => trigger.test(data))) {
 				this.requestFullUpdate();
 			}
+
+			this._executeNextQueuedCommand();
 		});
 		/* tslint:enable:brace-style */
+	}
+
+	protected abstract _buildSetOutputCommand(output: number, input: number): string;
+
+	protected _addCommandToQueue(command: string) {
+		if (this._waitingForReply) {
+			this._commandQueue.push(command);
+		} else {
+			this._executeCommand(command);
+		}
+	}
+
+	private _executeNextQueuedCommand() {
+		if (this._commandQueue.length <= 0) {
+			return;
+		}
+
+		const command = this._commandQueue.shift();
+		if (command) {
+			this._executeCommand(command);
+		}
+	}
+
+	private _executeCommand(command: string) {
+		this._waitingForReply = true;
+		console.log(`${this.name} | sending command:`, command.replace(this.delimiter, ''));
+		return this.serialport.write(command);
 	}
 }
