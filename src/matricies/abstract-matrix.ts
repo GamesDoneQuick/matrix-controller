@@ -12,6 +12,8 @@ import * as Readline from '@serialport/parser-readline';
 import * as ByteLength from '@serialport/parser-byte-length';
 import * as Binding from '@serialport/bindings';
 import debounce = require('lodash.debounce');
+import PQueue = require('p-queue');
+import pRetry = require('p-retry');
 
 // Ours
 import {SOCKET_MESSAGES} from '../../types/socket';
@@ -54,8 +56,7 @@ export abstract class AbstractMatrix extends EventEmitter {
 	state: AbstractMatrixState;
 
 	private _debouncedRequestFullUpdate?: Function;
-	private readonly _commandQueue: string[] = [];
-	private _waitingForReply = false;
+	private readonly _commandQueue = new PQueue({concurrency: 1});
 
 	abstract processFullUpdate(data: string): AbstractMatrixState.Outputs;
 
@@ -121,8 +122,6 @@ export abstract class AbstractMatrix extends EventEmitter {
 
 		/* tslint:disable:brace-style */
 		parser.on('data', (unparsedData: any) => {
-			this._waitingForReply = false;
-
 			const data = typeof unparsedData === 'string' ?
 				unparsedData :
 				unparsedData.toString();
@@ -139,36 +138,72 @@ export abstract class AbstractMatrix extends EventEmitter {
 			else if (this.fullUpdateTriggers && this.fullUpdateTriggers.some(trigger => trigger.test(data))) {
 				this.requestFullUpdate();
 			}
-
-			this._executeNextQueuedCommand();
 		});
 		/* tslint:enable:brace-style */
 	}
 
 	protected abstract _buildSetOutputCommand(output: number, input: number): string;
 
-	protected _addCommandToQueue(command: string) {
-		if (this._waitingForReply) {
-			this._commandQueue.push(command);
-		} else {
-			this._executeCommand(command);
-		}
+	protected _addCommandToQueue(commandString: string) {
+		const command = new Command(commandString);
+		const retries = 5;
+		this._commandQueue.add(() => {
+			return pRetry(() => {
+				return this._executeCommand(command);
+			}, {
+				retries,
+				minTimeout: 250,
+				onFailedAttempt: error => {
+					console.error(`${this.name} | failed sending command ${command.commandString}, retrying (${error.attemptNumber}/${retries})...`);
+				}
+			});
+		});
 	}
 
-	private _executeNextQueuedCommand() {
-		if (this._commandQueue.length <= 0) {
-			return;
-		}
+	private _executeCommand(command: Command) {
+		console.log(`${this.name} | sending command:`, command.commandString.replace(this.delimiter, ''));
+		return command.dispatch(this.serialport);
+	}
+}
 
-		const command = this._commandQueue.shift();
-		if (command) {
-			this._executeCommand(command);
-		}
+class Command {
+	commandString: string;
+	resolve: () => void;
+	reject: (error: Error) => void;
+	timeoutDuration = 1500;
+
+	private _dispatched = false;
+	private _timeout: NodeJS.Timeout;
+
+	constructor(commandString: string) {
+		this.commandString = commandString;
+		this._dataHandler = this._dataHandler.bind(this);
 	}
 
-	private _executeCommand(command: string) {
-		this._waitingForReply = true;
-		console.log(`${this.name} | sending command:`, command.replace(this.delimiter, ''));
-		return this.serialport.write(command);
+	dispatch(serialport: any) {
+		return new Promise((resolve, reject) => {
+			this.resolve = resolve;
+			this.reject = reject;
+
+			if (this._dispatched) {
+				return reject(new Error('command already dispatched'));
+			}
+
+			this._dispatched = true;
+
+			this._timeout = setTimeout(() => {
+				serialport.removeListener('data', this._dataHandler);
+				this._dispatched = false;
+				this.reject(new Error(`timed out after ${this.timeoutDuration} milliseconds`));
+			}, this.timeoutDuration);
+
+			serialport.write(this.commandString);
+			serialport.once('data', this._dataHandler);
+		});
+	}
+
+	private _dataHandler() {
+		clearTimeout(this._timeout);
+		this.resolve();
 	}
 }
