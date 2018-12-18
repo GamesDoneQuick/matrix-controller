@@ -14,6 +14,7 @@ export class ComponentMatrix extends AbstractMatrix {
 	// Serial protocol
 	fullUpdateTriggers = [
 		/^RECONFIG$/, // When the user changes something via the front panel.
+		/^Out\d{2} In\d{2}/, // Reply to one of our "set output" commands.
 		/^\(c\)Copyright \d{4}, Extron Electronics/ // When the unit powers up.
 	];
 	fullUpdateRequest = 'V0.';
