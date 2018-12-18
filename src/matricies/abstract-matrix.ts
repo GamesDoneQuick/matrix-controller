@@ -167,7 +167,10 @@ export abstract class AbstractMatrix extends EventEmitter {
 	}
 
 	private _executeCommand(command: string) {
-		this._waitingForReply = true;
+		if (process.env.NODE_ENV !== 'test') {
+			this._waitingForReply = true;
+		}
+
 		console.log(`${this.name} | sending command:`, command.replace(this.delimiter, ''));
 		return this.serialport.write(command);
 	}
