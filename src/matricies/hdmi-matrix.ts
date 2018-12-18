@@ -13,8 +13,8 @@ export class HdmiMatrix extends AbstractMatrix {
 
 	// Serial protocol
 	fullUpdateTriggers = [
-		/^<@WVSO/,
-		/^==================================$/
+		/^<@WVSO/, // When the user changes something via the front panel.
+		/^==================================$/ // When the unit powers up.
 	];
 	fullUpdateRequest = '>@R8006';
 	fullUpdateResponse = /^OUT CHANGE SET/;
