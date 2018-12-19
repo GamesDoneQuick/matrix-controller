@@ -38,7 +38,8 @@
     "postbuild": "sed -i~ 1d public/app.js",
     "watch": "tsc -p public/tsconfig.json --watch",
     "prerelease": "npm run build && npm run test",
-    "release": "standard-version"
+    "release": "standard-version",
+    "postrelease": "git push --follow-tags origin master"
   },
   "dependencies": {
     "@serialport/bindings": "^2.0.3",
