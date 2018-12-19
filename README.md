@@ -1,4 +1,4 @@
-# matrix-controller [![Build Status](https://travis-ci.com/GamesDoneQuick/matrix-controller.svg?branch=master)](https://travis-ci.com/GamesDoneQuick/matrix-controller)
+# matrix-controller [![Build Status](https://travis-ci.com/GamesDoneQuick/matrix-controller.svg?branch=master)](https://travis-ci.com/GamesDoneQuick/matrix-controller) [![codecov](https://codecov.io/gh/GamesDoneQuick/matrix-controller/branch/master/graph/badge.svg)](https://codecov.io/gh/GamesDoneQuick/matrix-controller)
 
 > GDQ's in-house system for controlling our video matricies.
 
