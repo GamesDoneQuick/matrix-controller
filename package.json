@@ -1,7 +1,7 @@
 {
   "name": "matrix-controller",
   "version": "1.0.0",
-  "description": "GDQ's in-house system for controlling our video matricies.",
+  "description": "GDQ's in-house system for controlling our video matrices.",
   "main": "src/index.ts",
   "author": "Alex Van Camp <alex@supportclass.net>",
   "license": "MIT",
