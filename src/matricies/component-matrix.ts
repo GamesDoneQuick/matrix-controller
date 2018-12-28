@@ -1,6 +1,5 @@
 // Ours
 import {AbstractMatrix} from './abstract-matrix';
-import config from '../config';
 
 const OUTPUT_REGEX = /\d{2}/g;
 
@@ -8,7 +7,6 @@ export class ComponentMatrix extends AbstractMatrix {
 	name = 'Component';
 
 	// Serial connection
-	serialPortPath = config.get('componentSerialPath');
 	baudRate = 9600;
 
 	// Serial protocol
@@ -19,11 +17,6 @@ export class ComponentMatrix extends AbstractMatrix {
 	];
 	fullUpdateRequest = 'V0.';
 	fullUpdateResponse = /^(?:\d{2} ){8}Vid (?:\d{2} ){8}Aud$/;
-
-	constructor() {
-		super();
-		this.init();
-	}
 
 	processFullUpdate(data: string) {
 		const matches = data.match(OUTPUT_REGEX);

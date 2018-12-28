@@ -18,12 +18,16 @@ MockBinding.createPort('COM1', {echo: false, record: true});
 MockBinding.createPort('COM2', {echo: false, record: true});
 
 // Import the library under test once our mocks are set up.
-import {componentMatrix, hdmiMatrix, stop} from '../src';
+import {componentMatrix, hdmiMatrix, stop} from '../src/app';
 
 let clientSocket: SocketIOClient.Socket;
 jest.setTimeout(10000);
 
-beforeAll(() => {
+beforeAll(async () => {
+	hdmiMatrix.comName = 'COM1';
+	componentMatrix.comName = 'COM2';
+	await hdmiMatrix.init();
+	await componentMatrix.init();
 	clientSocket = SocketIOClient(`http://localhost:${config.get('port')}`); // tslint:disable-line:no-http-string
 });
 

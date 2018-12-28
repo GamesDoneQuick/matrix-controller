@@ -21,7 +21,9 @@ MockBinding.createPort(MOCK_COMP_SERIAL_PATH, {echo: false, record: true});
 
 const hdmiMatrix = new HdmiMatrix();
 
-beforeAll(done => {
+beforeAll(async done => {
+	hdmiMatrix.comName = MOCK_HDMI_SERIAL_PATH;
+	await hdmiMatrix.init();
 	hdmiMatrix.serialport.on('open', () => {
 		process.nextTick(() => {
 			done();

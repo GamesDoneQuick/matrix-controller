@@ -9,20 +9,6 @@ const conf = convict({
 		env: 'PORT',
 		arg: 'port'
 	},
-	hdmiSerialPath: {
-		doc: 'The path/device to use for serial communications.',
-		format: String,
-		default: 'COM1',
-		env: 'HDMI_SERIAL_PATH',
-		arg: 'hdmiSerialPath'
-	},
-	componentSerialPath: {
-		doc: 'The path/device to use for serial communications.',
-		format: String,
-		default: 'COM2',
-		env: 'COMPONENT_SERIAL_PATH',
-		arg: 'componentSerialPath'
-	},
 	sentry: {
 		enabled: {
 			doc: 'Whether or not to enable Sentry error reporting.',

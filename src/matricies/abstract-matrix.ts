@@ -32,7 +32,7 @@ export abstract class AbstractMatrix extends EventEmitter {
 	abstract name: string;
 
 	// Serial connection
-	abstract serialPortPath: string;
+	comName: string;
 	abstract baudRate: number;
 	dataBits = 8;
 	stopBits = 1;
@@ -77,7 +77,7 @@ export abstract class AbstractMatrix extends EventEmitter {
 		this._addCommandToQueue(this._buildSetOutputCommand(output, input));
 	}
 
-	protected init() {
+	init() {
 		// Initialize state.
 		this.state = {
 			outputs: []
@@ -86,23 +86,8 @@ export abstract class AbstractMatrix extends EventEmitter {
 			this.state.outputs[i] = i % this.numInputs;
 		}
 
-		// Create serialport.
-		const serialport = new SerialPort(this.serialPortPath, {
-			baudRate: this.baudRate,
-			dataBits: this.dataBits,
-			stopBits: this.stopBits,
-			parity: this.parity
-		});
-
-		// Create parser.
-		// If this.byteLength is defined, use a ByteLength parser.
-		// Else, use a Readline parser.
-		const parser = serialport.pipe(
-			this.byteLength ?
-				new ByteLength({length: this.byteLength}) :
-				new Readline({delimiter: this.delimiter})
-		);
-
+		const serialport = this._createSerialPort(this.comName);
+		const parser = this._createParser(serialport);
 		this.serialport = serialport;
 		this.parser = parser;
 
@@ -145,6 +130,53 @@ export abstract class AbstractMatrix extends EventEmitter {
 		/* tslint:enable:brace-style */
 	}
 
+	async testCom(comName: string): Promise<boolean> {
+		const serialport = this._createSerialPort(comName);
+		const parser = this._createParser(serialport);
+
+		serialport.once('open', async () => {
+			setTimeout(() => {
+				serialport.write(this.fullUpdateRequest + this.delimiter);
+			}, 250);
+		});
+
+		const result = await new Promise((resolve, reject) => {
+			let resolved = false;
+
+			parser.on('data', (data: string) => {
+				if (resolved) {
+					return;
+				}
+
+				if (this.fullUpdateResponse && this.fullUpdateResponse.test(data)) {
+					resolved = true;
+					resolve(true);
+				}
+			});
+
+			parser.on('error', (error: Error) => {
+				if (resolved) {
+					return;
+				}
+
+				resolved = true;
+				reject(error);
+			});
+
+			setTimeout(() => {
+				if (resolved) {
+					return;
+				}
+
+				resolved = true;
+				resolve(false);
+			}, 2000);
+		});
+
+		await this._closeSerialPort(serialport);
+		return result as boolean;
+	}
+
 	protected abstract _buildSetOutputCommand(output: number, input: number): string;
 
 	protected _addCommandToQueue(command: string) {
@@ -173,5 +205,36 @@ export abstract class AbstractMatrix extends EventEmitter {
 
 		console.log(`${this.name} | sending command:`, command.replace(this.delimiter, ''));
 		return this.serialport.write(command);
+	}
+
+	private _createSerialPort(comName: string) {
+		return new SerialPort(comName, {
+			baudRate: this.baudRate,
+			dataBits: this.dataBits,
+			stopBits: this.stopBits,
+			parity: this.parity
+		});
+	}
+
+	private _createParser(serialport: any) {
+		// If this.byteLength is defined, use a ByteLength parser.
+		// Else, use a Readline parser.
+		return serialport.pipe(
+			this.byteLength ?
+				new ByteLength({length: this.byteLength}) :
+				new Readline({delimiter: this.delimiter})
+		);
+	}
+
+	private _closeSerialPort(serialport: any) {
+		return new Promise((resolve, reject) => {
+			serialport.close((error: Error) => {
+				if (error) {
+					reject(error);
+				} else {
+					resolve();
+				}
+			});
+		});
 	}
 }

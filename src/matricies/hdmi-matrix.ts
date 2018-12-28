@@ -1,6 +1,5 @@
 // Ours
 import {AbstractMatrix} from './abstract-matrix';
-import config from '../config';
 
 const OUTPUT_REGEX = /\d{2}/g;
 
@@ -8,7 +7,6 @@ export class HdmiMatrix extends AbstractMatrix {
 	name = 'HDMI';
 
 	// Serial connection
-	serialPortPath = config.get('hdmiSerialPath');
 	baudRate = 57600;
 
 	// Serial protocol
@@ -18,11 +16,6 @@ export class HdmiMatrix extends AbstractMatrix {
 	];
 	fullUpdateRequest = '>@R8006';
 	fullUpdateResponse = /^OUT CHANGE SET/;
-
-	constructor() {
-		super();
-		this.init();
-	}
 
 	processFullUpdate(data: string) {
 		const matches = data.match(OUTPUT_REGEX);
