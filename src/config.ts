@@ -22,6 +22,22 @@ const conf = convict({
 		default: 'COM2',
 		env: 'COMPONENT_SERIAL_PATH',
 		arg: 'componentSerialPath'
+	},
+	sentry: {
+		enabled: {
+			doc: 'Whether or not to enable Sentry error reporting.',
+			format: Boolean,
+			default: true,
+			env: 'SENTRY_ENABLED',
+			arg: 'sentryEnabled'
+		},
+		dsn: {
+			doc: 'A Sentry project DSN.',
+			format: String,
+			default: '',
+			env: 'SENTRY_DSN',
+			arg: 'sentryDsn'
+		}
 	}
 });
 

@@ -42,6 +42,7 @@
     "postrelease": "git push --follow-tags origin master"
   },
   "dependencies": {
+    "@sentry/node": "^4.4.2",
     "@serialport/bindings": "^2.0.3",
     "@serialport/parser-byte-length": "^2.0.2",
     "@serialport/parser-readline": "^2.0.2",

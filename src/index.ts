@@ -10,6 +10,7 @@ import * as SerialPort from '@serialport/stream';
 import * as Binding from '@serialport/bindings';
 import transformMiddleware from 'express-transform-bare-module-specifiers';
 import debounce = require('lodash.debounce');
+import * as Sentry from '@sentry/node';
 
 // Ours
 import config from './config';
@@ -20,6 +21,12 @@ import {COMP_IN, COMP_OUT, HDMI_IN, IN, OUT} from '../types/matrix-mappings';
 
 if (process.env.NODE_ENV !== 'test') {
 	SerialPort.Binding = Binding;
+}
+
+if (config.get('sentry.enabled')) {
+	Sentry.init({
+		dsn: config.get('sentry.dsn')
+	});
 }
 
 const app = express();
