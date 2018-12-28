@@ -207,9 +207,9 @@ function _updateState() {
 	}
 
 	console.log('----------------------------------');
-	console.log('hdmiMatrix state:\t  ', hdmiMatrix.state);
+	console.log('hdmiMatrix state:     ', hdmiMatrix.state);
 	console.log('componentMatrix state:', componentMatrix.state);
-	console.log('app state:\t\t\t  ', state);
+	console.log('app state:            ', state);
 	console.log('----------------------------------');
 	io.emit(SOCKET_MESSAGES.OUTPUT_STATUSES, state.outputs);
 }
