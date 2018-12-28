@@ -137,7 +137,7 @@ export abstract class AbstractMatrix extends EventEmitter {
 		serialport.once('open', async () => {
 			setTimeout(() => {
 				serialport.write(this.fullUpdateRequest + this.delimiter);
-			}, 250);
+			}, 150);
 		});
 
 		const result = await new Promise((resolve, reject) => {
@@ -170,7 +170,7 @@ export abstract class AbstractMatrix extends EventEmitter {
 
 				resolved = true;
 				resolve(false);
-			}, 2000);
+			}, 500);
 		});
 
 		await this._closeSerialPort(serialport);
