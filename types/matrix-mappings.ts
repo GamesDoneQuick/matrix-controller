@@ -10,18 +10,18 @@ export enum OUT {
 }
 
 export enum IN {
-	HDMI_1,
-	HDMI_2,
-	HDMI_3,
-	HDMI_4,
+	SCART_1,
+	SCART_2,
+	SCART_3,
+	SCART_4,
 	COMP_1,
 	COMP_2,
 	COMP_3,
 	COMP_4,
-	SCART_1,
-	SCART_2,
-	SCART_3,
-	SCART_4
+	HDMI_1,
+	HDMI_2,
+	HDMI_3,
+	HDMI_4
 }
 
 export const enum HDMI_OUT {
