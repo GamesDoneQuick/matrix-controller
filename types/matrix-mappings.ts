@@ -58,12 +58,12 @@ export const enum COMP_OUT {
 }
 
 export const enum COMP_IN {
-	COMP_1,
-	COMP_2,
-	COMP_3,
-	COMP_4,
-	SCART_1,
-	SCART_2,
+	SCART_4,
 	SCART_3,
-	SCART_4
+	SCART_2,
+	SCART_1,
+	COMP_4,
+	COMP_3,
+	COMP_2,
+	COMP_1
 }
