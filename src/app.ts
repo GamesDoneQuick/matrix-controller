@@ -70,18 +70,68 @@ io.on('connection', socket => {
 		if (isHdmiInput(input)) {
 			const offset = HDMI_IN.HD_1 - IN.HDMI_1;
 			hdmiMatrix.setOutput(output, input + offset);
-		} else if (isComponentInput(input)) {
+		} else {
 			const osscOutput = calcOsscOutput(input);
-			componentMatrix.setOutput(osscOutput, input - 4);
-			hdmiMatrix.setOutput(output, input - 4);
-		} else { // SCART input
-			const osscOutput = calcOsscOutput(input);
-			componentMatrix.setOutput(osscOutput, input - 4);
-			hdmiMatrix.setOutput(output, input - 8);
-		}
-
-		if (isTvOutput(output) && (isComponentInput(input) || isScartInput(input))) {
-			componentMatrix.setOutput(output, input - 4);
+			switch (input) {
+				case IN.COMP_1:
+					hdmiMatrix.setOutput(output, HDMI_IN.OSSC_1);
+					componentMatrix.setOutput(osscOutput, COMP_IN.COMP_1);
+					if (isTvOutput(output)) {
+						componentMatrix.setOutput(output, COMP_IN.COMP_1);
+					}
+					break;
+				case IN.COMP_2:
+					hdmiMatrix.setOutput(output, HDMI_IN.OSSC_2);
+					componentMatrix.setOutput(osscOutput, COMP_IN.COMP_2);
+					if (isTvOutput(output)) {
+						componentMatrix.setOutput(output, COMP_IN.COMP_2);
+					}
+					break;
+				case IN.COMP_3:
+					hdmiMatrix.setOutput(output, HDMI_IN.OSSC_3);
+					componentMatrix.setOutput(osscOutput, COMP_IN.COMP_3);
+					if (isTvOutput(output)) {
+						componentMatrix.setOutput(output, COMP_IN.COMP_3);
+					}
+					break;
+				case IN.COMP_4:
+					hdmiMatrix.setOutput(output, HDMI_IN.OSSC_4);
+					componentMatrix.setOutput(osscOutput, COMP_IN.COMP_4);
+					if (isTvOutput(output)) {
+						componentMatrix.setOutput(output, COMP_IN.COMP_4);
+					}
+					break;
+				case IN.SCART_1:
+					hdmiMatrix.setOutput(output, HDMI_IN.OSSC_1);
+					componentMatrix.setOutput(osscOutput, COMP_IN.SCART_1);
+					if (isTvOutput(output)) {
+						componentMatrix.setOutput(output, COMP_IN.SCART_1);
+					}
+					break;
+				case IN.SCART_2:
+					hdmiMatrix.setOutput(output, HDMI_IN.OSSC_2);
+					componentMatrix.setOutput(osscOutput, COMP_IN.SCART_2);
+					if (isTvOutput(output)) {
+						componentMatrix.setOutput(output, COMP_IN.SCART_2);
+					}
+					break;
+				case IN.SCART_3:
+					hdmiMatrix.setOutput(output, HDMI_IN.OSSC_3);
+					componentMatrix.setOutput(osscOutput, COMP_IN.SCART_3);
+					if (isTvOutput(output)) {
+						componentMatrix.setOutput(output, COMP_IN.SCART_3);
+					}
+					break;
+				case IN.SCART_4:
+					hdmiMatrix.setOutput(output, HDMI_IN.OSSC_4);
+					componentMatrix.setOutput(osscOutput, COMP_IN.SCART_4);
+					if (isTvOutput(output)) {
+						componentMatrix.setOutput(output, COMP_IN.SCART_4);
+					}
+					break;
+				default:
+					// Do nothing.
+			}
 		}
 	});
 });
@@ -128,14 +178,6 @@ export function stop(done: Function) {
 
 function isHdmiInput(input: number) {
 	return input >= IN.HDMI_1 && input <= IN.HDMI_4;
-}
-
-function isComponentInput(input: number) {
-	return input >= IN.COMP_1 && input <= IN.COMP_4;
-}
-
-function isScartInput(input: number) {
-	return input >= IN.SCART_1 && input <= IN.SCART_4;
 }
 
 function isTvOutput(output: number) {
