@@ -9,6 +9,12 @@ const conf = convict({
 		env: 'PORT',
 		arg: 'port'
 	},
+	skipMatricies: {
+		doc: 'Used for testing. If true, skips trying to connect to the matricies.',
+		format: Boolean,
+		default: false,
+		env: 'SKIP_MATRICIES'
+	},
 	sentry: {
 		enabled: {
 			doc: 'Whether or not to enable Sentry error reporting.',

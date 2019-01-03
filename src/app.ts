@@ -137,6 +137,10 @@ io.on('connection', socket => {
 });
 
 export async function start() {
+	if (config.get('skipMatricies')) {
+		return;
+	}
+
 	const serialports = await SerialPort.list() as {comName: string}[];
 	for (const serialport of serialports) {
 		console.log(`Checking if ${serialport.comName} is connected to the HDMI matrix...`);
