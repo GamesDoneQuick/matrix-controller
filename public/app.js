@@ -1,4 +1,3 @@
-const ENDPOINT_RADIUS = 20;
 const PAINT_STYLE = {
     gradient: {
         stops: [
@@ -9,7 +8,7 @@ const PAINT_STYLE = {
     stroke: '#558822',
     strokeWidth: 10
 };
-const ENDPOINT_STYLE = ['Dot', { radius: ENDPOINT_RADIUS }];
+const ENDPOINT_STYLE = ['Blank', { radius: 0 }];
 const socket = io();
 // It is very important that we always refer to this instance, and never to the jsPlumb global.
 const instance = jsPlumb.getInstance({
