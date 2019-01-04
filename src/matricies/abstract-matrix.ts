@@ -74,7 +74,12 @@ export abstract class AbstractMatrix extends EventEmitter {
 	}
 
 	setOutput(output: number, input: number) {
+		if (output < 0 || input < 0) {
+			// Do nothing when null routing.
+			return false;
+		}
 		this._addCommandToQueue(this._buildSetOutputCommand(output, input));
+		return true;
 	}
 
 	init() {
