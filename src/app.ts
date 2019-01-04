@@ -14,11 +14,11 @@ import config from './config';
 import {SOCKET_MESSAGES} from '../types/socket';
 import {HdmiMatrix} from './matricies/hdmi-matrix';
 import {ComponentMatrix} from './matricies/component-matrix';
-import {COMP_IN, COMP_OUT, HDMI_IN, HDMI_OUT, VIRTUAL_IN, VIRTUAL_OUT} from '../types/matrix-mappings';
+import {COMP_OUT, HDMI_OUT, VIRTUAL_IN, VIRTUAL_OUT} from '../types/matrix-mappings';
 import debounce = require('lodash.debounce');
 import {
 	compInputToVirtualInput,
-	hdmiInputToVirtualInput,
+	hdmiInputToVirtualInput, virtualInputToComponentInput, virtualInputToHdmiInput,
 	virtualOutputToComponentOutput,
 	virtualOutputToHdmiOutput
 } from './conversions';
@@ -71,47 +71,15 @@ io.on('connection', socket => {
 		const input = validateAndClamp(unparsedInput, Object.keys(VIRTUAL_IN).length - 1) as VIRTUAL_IN;
 		console.log('SET_OUTPUT | output: %s, input: %s', output, input);
 
-		if (isHdmiInput(input)) {
-			const offset = HDMI_IN.HD_1 - VIRTUAL_IN.HDMI_1;
-			hdmiMatrix.setOutput(output, input + offset);
-		} else {
-			switch (input) {
-				case VIRTUAL_IN.COMP_1:
-					hdmiMatrix.setOutput(virtualOutputToHdmiOutput(output), HDMI_IN.OSSC_1);
-					componentMatrix.setOutput(virtualOutputToComponentOutput(output, input), COMP_IN.COMP_1);
-					break;
-				case VIRTUAL_IN.COMP_2:
-					hdmiMatrix.setOutput(virtualOutputToHdmiOutput(output), HDMI_IN.OSSC_2);
-					componentMatrix.setOutput(virtualOutputToComponentOutput(output, input), COMP_IN.COMP_2);
-					break;
-				case VIRTUAL_IN.COMP_3:
-					hdmiMatrix.setOutput(virtualOutputToHdmiOutput(output), HDMI_IN.OSSC_3);
-					componentMatrix.setOutput(virtualOutputToComponentOutput(output, input), COMP_IN.COMP_3);
-					break;
-				case VIRTUAL_IN.COMP_4:
-					hdmiMatrix.setOutput(virtualOutputToHdmiOutput(output), HDMI_IN.OSSC_4);
-					componentMatrix.setOutput(virtualOutputToComponentOutput(output, input), COMP_IN.COMP_4);
-					break;
-				case VIRTUAL_IN.SCART_1:
-					hdmiMatrix.setOutput(virtualOutputToHdmiOutput(output), HDMI_IN.OSSC_1);
-					componentMatrix.setOutput(virtualOutputToComponentOutput(output, input), COMP_IN.SCART_1);
-					break;
-				case VIRTUAL_IN.SCART_2:
-					hdmiMatrix.setOutput(virtualOutputToHdmiOutput(output), HDMI_IN.OSSC_2);
-					componentMatrix.setOutput(virtualOutputToComponentOutput(output, input), COMP_IN.SCART_2);
-					break;
-				case VIRTUAL_IN.SCART_3:
-					hdmiMatrix.setOutput(virtualOutputToHdmiOutput(output), HDMI_IN.OSSC_3);
-					componentMatrix.setOutput(virtualOutputToComponentOutput(output, input), COMP_IN.SCART_3);
-					break;
-				case VIRTUAL_IN.SCART_4:
-					hdmiMatrix.setOutput(virtualOutputToHdmiOutput(output), HDMI_IN.OSSC_4);
-					componentMatrix.setOutput(virtualOutputToComponentOutput(output, input), COMP_IN.SCART_4);
-					break;
-				default:
-					// Do nothing.
-			}
-		}
+		componentMatrix.setOutput(
+			virtualOutputToComponentOutput(output, input),
+			virtualInputToComponentInput(input)
+		);
+
+		hdmiMatrix.setOutput(
+			virtualOutputToHdmiOutput(output),
+			virtualInputToHdmiInput(input)
+		);
 	});
 });
 
@@ -157,10 +125,6 @@ export async function start() {
 
 export function stop(done: Function) {
 	server.close(done);
-}
-
-function isHdmiInput(input: number) {
-	return input >= VIRTUAL_IN.HDMI_1 && input <= VIRTUAL_IN.HDMI_4;
 }
 
 function validateAndClamp(unparsed: unknown, max: number) {

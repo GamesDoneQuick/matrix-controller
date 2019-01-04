@@ -42,6 +42,7 @@ export const enum HDMI_OUT {
 }
 
 export const enum HDMI_IN {
+	NULL = -1,
 	OSSC_1,
 	OSSC_2,
 	OSSC_3,
@@ -65,6 +66,7 @@ export const enum COMP_OUT {
 }
 
 export const enum COMP_IN {
+	NULL = -1,
 	SCART_4,
 	SCART_3,
 	SCART_2,
