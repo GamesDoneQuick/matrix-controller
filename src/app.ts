@@ -250,8 +250,8 @@ function _updateState() {
 			computedOutput = compInputToVirtualInput(componentMatrix.state.outputs[COMP_OUT.OSSC_4]);
 		}
 
-		nullRouteMismatchedTVs(computedOutput);
 		state.outputs[outputChannel] = computedOutput;
+		nullRouteMismatchedTVs(computedOutput);
 	}
 
 	console.log('----------------------------------');
