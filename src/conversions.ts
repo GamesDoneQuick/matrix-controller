@@ -81,18 +81,6 @@ export function virtualOutputToHdmiOutput(virtualOutput: VIRTUAL_OUT): HDMI_OUT 
 }
 
 export function virtualOutputToComponentOutput(virtualOutput: VIRTUAL_OUT, virtualInput: VIRTUAL_IN): COMP_OUT {
-	if (virtualInput === VIRTUAL_IN.SCART_1 || virtualInput === VIRTUAL_IN.COMP_1) {
-		return COMP_OUT.OSSC_1;
-	}
-	if (virtualInput === VIRTUAL_IN.SCART_2 || virtualInput === VIRTUAL_IN.COMP_2) {
-		return COMP_OUT.OSSC_2;
-	}
-	if (virtualInput === VIRTUAL_IN.SCART_3 || virtualInput === VIRTUAL_IN.COMP_3) {
-		return COMP_OUT.OSSC_3;
-	}
-	if (virtualInput === VIRTUAL_IN.SCART_4 || virtualInput === VIRTUAL_IN.COMP_4) {
-		return COMP_OUT.OSSC_4;
-	}
 	if (virtualOutput === VIRTUAL_OUT.CRT_1) {
 		return COMP_OUT.CRT_1;
 	}
@@ -104,6 +92,18 @@ export function virtualOutputToComponentOutput(virtualOutput: VIRTUAL_OUT, virtu
 	}
 	if (virtualOutput === VIRTUAL_OUT.CRT_4) {
 		return COMP_OUT.CRT_4;
+	}
+	if (virtualInput === VIRTUAL_IN.SCART_1 || virtualInput === VIRTUAL_IN.COMP_1) {
+		return COMP_OUT.OSSC_1;
+	}
+	if (virtualInput === VIRTUAL_IN.SCART_2 || virtualInput === VIRTUAL_IN.COMP_2) {
+		return COMP_OUT.OSSC_2;
+	}
+	if (virtualInput === VIRTUAL_IN.SCART_3 || virtualInput === VIRTUAL_IN.COMP_3) {
+		return COMP_OUT.OSSC_3;
+	}
+	if (virtualInput === VIRTUAL_IN.SCART_4 || virtualInput === VIRTUAL_IN.COMP_4) {
+		return COMP_OUT.OSSC_4;
 	}
 
 	return COMP_OUT.NULL;
