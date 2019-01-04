@@ -17,7 +17,7 @@ import config from './config';
 import {SOCKET_MESSAGES} from '../types/socket';
 import {HdmiMatrix} from './matricies/hdmi-matrix';
 import {ComponentMatrix} from './matricies/component-matrix';
-import {COMP_IN, COMP_OUT, HDMI_IN, IN, OUT} from '../types/matrix-mappings';
+import {COMP_IN, COMP_OUT, HDMI_IN, HDMI_OUT, IN, OUT} from '../types/matrix-mappings';
 
 if (process.env.NODE_ENV !== 'test') {
 	SerialPort.Binding = Binding;
@@ -70,6 +70,7 @@ io.on('connection', socket => {
 		if (isHdmiInput(input)) {
 			const offset = HDMI_IN.HD_1 - IN.HDMI_1;
 			hdmiMatrix.setOutput(output, input + offset);
+			// TODO: is this the source of the bug?
 		} else {
 			const osscOutput = calcOsscOutput(input);
 			switch (input) {
@@ -240,16 +241,17 @@ function _updateState() {
 		} else if (hdmiInput === HDMI_IN.HD_4) {
 			computedOutput = IN.HDMI_4;
 		} else if (hdmiInput === HDMI_IN.OSSC_1) {
-			computedOutput = hooBoy(componentMatrix.state.outputs[COMP_OUT.OSSC_1]);
+			computedOutput = compInputToVirtualInput(componentMatrix.state.outputs[COMP_OUT.OSSC_1]);
 		} else if (hdmiInput === HDMI_IN.OSSC_2) {
-			computedOutput = hooBoy(componentMatrix.state.outputs[COMP_OUT.OSSC_2]);
+			computedOutput = compInputToVirtualInput(componentMatrix.state.outputs[COMP_OUT.OSSC_2]);
 		} else if (hdmiInput === HDMI_IN.OSSC_3) {
-			computedOutput = hooBoy(componentMatrix.state.outputs[COMP_OUT.OSSC_3]);
+			computedOutput = compInputToVirtualInput(componentMatrix.state.outputs[COMP_OUT.OSSC_3]);
 		} else if (hdmiInput === HDMI_IN.OSSC_4) {
-			computedOutput = hooBoy(componentMatrix.state.outputs[COMP_OUT.OSSC_4]);
+			computedOutput = compInputToVirtualInput(componentMatrix.state.outputs[COMP_OUT.OSSC_4]);
 		}
 
 		state.outputs[outputChannel] = computedOutput;
+		nullRouteMismatchedTVs(computedOutput);
 	}
 
 	console.log('----------------------------------');
@@ -260,7 +262,7 @@ function _updateState() {
 	io.emit(SOCKET_MESSAGES.OUTPUT_STATUSES, state.outputs);
 }
 
-function hooBoy(compInput: COMP_IN): IN {
+function compInputToVirtualInput(compInput: COMP_IN): IN {
 	if (compInput === COMP_IN.COMP_1) {
 		return IN.COMP_1;
 	}
@@ -283,4 +285,68 @@ function hooBoy(compInput: COMP_IN): IN {
 		return IN.SCART_3;
 	}
 	return IN.SCART_4;
+}
+
+function hdmiInputToVirtualInput(hdmiInput: HDMI_IN): IN {
+	if (hdmiInput === HDMI_IN.OSSC_1) {
+		return compInputToVirtualInput(componentMatrix.state.outputs[COMP_OUT.OSSC_1]);
+	}
+	if (hdmiInput === HDMI_IN.OSSC_2) {
+		return compInputToVirtualInput(componentMatrix.state.outputs[COMP_OUT.OSSC_2]);
+	}
+	if (hdmiInput === HDMI_IN.OSSC_3) {
+		return compInputToVirtualInput(componentMatrix.state.outputs[COMP_OUT.OSSC_3]);
+	}
+	if (hdmiInput === HDMI_IN.OSSC_4) {
+		return compInputToVirtualInput(componentMatrix.state.outputs[COMP_OUT.OSSC_4]);
+	}
+	if (hdmiInput === HDMI_IN.HD_1) {
+		return IN.HDMI_1;
+	}
+	if (hdmiInput === HDMI_IN.HD_2) {
+		return IN.HDMI_2;
+	}
+	if (hdmiInput === HDMI_IN.HD_3) {
+		return IN.HDMI_3;
+	}
+	return IN.HDMI_4;
+}
+
+function nullRouteMismatchedTVs(computedOutput: OUT) {
+	switch (computedOutput) {
+		case OUT.TV_1:
+			const CRT1 = compInputToVirtualInput(componentMatrix.state.outputs[COMP_OUT.CRT_1]);
+			const LCD1 = hdmiInputToVirtualInput(hdmiMatrix.state.outputs[HDMI_OUT.TV_1]);
+			if (CRT1 !== LCD1) {
+				state.outputs[OUT.TV_1] = OUT.NULL;
+				console.log('Null routing TV1');
+			}
+			break;
+		case OUT.TV_2:
+			const CRT2 = compInputToVirtualInput(componentMatrix.state.outputs[COMP_OUT.CRT_2]);
+			const LCD2 = hdmiInputToVirtualInput(hdmiMatrix.state.outputs[HDMI_OUT.TV_2]);
+			if (CRT2 !== LCD2) {
+				state.outputs[OUT.TV_2] = OUT.NULL;
+				console.log('Null routing TV2');
+			}
+			break;
+		case OUT.TV_3:
+			const CRT3 = compInputToVirtualInput(componentMatrix.state.outputs[COMP_OUT.CRT_3]);
+			const LCD3 = hdmiInputToVirtualInput(hdmiMatrix.state.outputs[HDMI_OUT.TV_3]);
+			if (CRT3 !== LCD3) {
+				state.outputs[OUT.TV_3] = OUT.NULL;
+				console.log('Null routing TV3');
+			}
+			break;
+		case OUT.TV_4:
+			const CRT4 = compInputToVirtualInput(componentMatrix.state.outputs[COMP_OUT.CRT_4]);
+			const LCD4 = hdmiInputToVirtualInput(hdmiMatrix.state.outputs[HDMI_OUT.TV_4]);
+			if (CRT4 !== LCD4) {
+				state.outputs[OUT.TV_4] = OUT.NULL;
+				console.log('Null routing TV4');
+			}
+			break;
+		default:
+			// Do nothing.
+	}
 }

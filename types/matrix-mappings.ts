@@ -1,4 +1,5 @@
 export enum OUT {
+	NULL = -1,
 	STREAM_1,
 	STREAM_2,
 	STREAM_3,
