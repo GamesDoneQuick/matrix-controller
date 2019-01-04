@@ -53,40 +53,52 @@ test('calls setOutput on the matrix instances when SET_OUTPUT is invoked', async
 		{output: VIRTUAL_OUT.STREAM_1, input: VIRTUAL_IN.HDMI_3,  hdmiMatrix: [HDMI_OUT.STREAM_1, HDMI_IN.HD_3]},
 		{output: VIRTUAL_OUT.STREAM_1, input: VIRTUAL_IN.HDMI_4,  hdmiMatrix: [HDMI_OUT.STREAM_1, HDMI_IN.HD_4]},
 
-		// CRT/LCD output, HDMI input.
-		{output: VIRTUAL_OUT.TV_4,     input: VIRTUAL_IN.HDMI_1,  hdmiMatrix: [HDMI_OUT.LCD_4,     HDMI_IN.HD_1]},
-		{output: VIRTUAL_OUT.TV_4,     input: VIRTUAL_IN.HDMI_2,  hdmiMatrix: [HDMI_OUT.LCD_4,     HDMI_IN.HD_2]},
-		{output: VIRTUAL_OUT.TV_4,     input: VIRTUAL_IN.HDMI_3,  hdmiMatrix: [HDMI_OUT.LCD_4,     HDMI_IN.HD_3]},
-		{output: VIRTUAL_OUT.TV_4,     input: VIRTUAL_IN.HDMI_4,  hdmiMatrix: [HDMI_OUT.LCD_4,     HDMI_IN.HD_4]},
+		// LCD output, HDMI input.
+		{output: VIRTUAL_OUT.LCD_4,    input: VIRTUAL_IN.HDMI_1,  hdmiMatrix: [HDMI_OUT.LCD_4,     HDMI_IN.HD_1]},
+		{output: VIRTUAL_OUT.LCD_4,    input: VIRTUAL_IN.HDMI_2,  hdmiMatrix: [HDMI_OUT.LCD_4,     HDMI_IN.HD_2]},
+		{output: VIRTUAL_OUT.LCD_4,    input: VIRTUAL_IN.HDMI_3,  hdmiMatrix: [HDMI_OUT.LCD_4,     HDMI_IN.HD_3]},
+		{output: VIRTUAL_OUT.LCD_4,    input: VIRTUAL_IN.HDMI_4,  hdmiMatrix: [HDMI_OUT.LCD_4,     HDMI_IN.HD_4]},
 
 		// HDMI output, Component input.
-		{output: VIRTUAL_OUT.STREAM_1, input: VIRTUAL_IN.COMP_1,  hdmiMatrix: [HDMI_OUT.STREAM_1, HDMI_IN.OSSC_1], componentMatrix: [[COMP_OUT.OSSC_1, COMP_IN.COMP_1]]},
-		{output: VIRTUAL_OUT.STREAM_1, input: VIRTUAL_IN.COMP_2,  hdmiMatrix: [HDMI_OUT.STREAM_1, HDMI_IN.OSSC_2], componentMatrix: [[COMP_OUT.OSSC_2, COMP_IN.COMP_2]]},
-		{output: VIRTUAL_OUT.STREAM_1, input: VIRTUAL_IN.COMP_3,  hdmiMatrix: [HDMI_OUT.STREAM_1, HDMI_IN.OSSC_3], componentMatrix: [[COMP_OUT.OSSC_3, COMP_IN.COMP_3]]},
-		{output: VIRTUAL_OUT.STREAM_1, input: VIRTUAL_IN.COMP_4,  hdmiMatrix: [HDMI_OUT.STREAM_1, HDMI_IN.OSSC_4], componentMatrix: [[COMP_OUT.OSSC_4, COMP_IN.COMP_4]]},
+		{output: VIRTUAL_OUT.STREAM_1, input: VIRTUAL_IN.COMP_1,  hdmiMatrix: [HDMI_OUT.STREAM_1, HDMI_IN.OSSC_1], componentMatrix: [COMP_OUT.OSSC_1, COMP_IN.COMP_1]},
+		{output: VIRTUAL_OUT.STREAM_1, input: VIRTUAL_IN.COMP_2,  hdmiMatrix: [HDMI_OUT.STREAM_1, HDMI_IN.OSSC_2], componentMatrix: [COMP_OUT.OSSC_2, COMP_IN.COMP_2]},
+		{output: VIRTUAL_OUT.STREAM_1, input: VIRTUAL_IN.COMP_3,  hdmiMatrix: [HDMI_OUT.STREAM_1, HDMI_IN.OSSC_3], componentMatrix: [COMP_OUT.OSSC_3, COMP_IN.COMP_3]},
+		{output: VIRTUAL_OUT.STREAM_1, input: VIRTUAL_IN.COMP_4,  hdmiMatrix: [HDMI_OUT.STREAM_1, HDMI_IN.OSSC_4], componentMatrix: [COMP_OUT.OSSC_4, COMP_IN.COMP_4]},
 
-		// CRT/LCD output, Component input.
-		{output: VIRTUAL_OUT.TV_4,     input: VIRTUAL_IN.COMP_1,  hdmiMatrix: [HDMI_OUT.LCD_4,     HDMI_IN.OSSC_1], componentMatrix: [[COMP_OUT.OSSC_1, COMP_IN.COMP_1], [COMP_OUT.CRT_4, COMP_IN.COMP_1]]},
-		{output: VIRTUAL_OUT.TV_4,     input: VIRTUAL_IN.COMP_2,  hdmiMatrix: [HDMI_OUT.LCD_4,     HDMI_IN.OSSC_2], componentMatrix: [[COMP_OUT.OSSC_2, COMP_IN.COMP_2], [COMP_OUT.CRT_4, COMP_IN.COMP_2]]},
-		{output: VIRTUAL_OUT.TV_4,     input: VIRTUAL_IN.COMP_3,  hdmiMatrix: [HDMI_OUT.LCD_4,     HDMI_IN.OSSC_3], componentMatrix: [[COMP_OUT.OSSC_3, COMP_IN.COMP_3], [COMP_OUT.CRT_4, COMP_IN.COMP_3]]},
-		{output: VIRTUAL_OUT.TV_4,     input: VIRTUAL_IN.COMP_4,  hdmiMatrix: [HDMI_OUT.LCD_4,     HDMI_IN.OSSC_4], componentMatrix: [[COMP_OUT.OSSC_4, COMP_IN.COMP_4], [COMP_OUT.CRT_4, COMP_IN.COMP_4]]},
+		// CRT, Component input.
+		{output: VIRTUAL_OUT.CRT_4,    input: VIRTUAL_IN.COMP_1,  componentMatrix: [COMP_OUT.CRT_4, COMP_IN.COMP_1]},
+		{output: VIRTUAL_OUT.CRT_4,    input: VIRTUAL_IN.COMP_2,  componentMatrix: [COMP_OUT.CRT_4, COMP_IN.COMP_2]},
+		{output: VIRTUAL_OUT.CRT_4,    input: VIRTUAL_IN.COMP_3,  componentMatrix: [COMP_OUT.CRT_4, COMP_IN.COMP_3]},
+		{output: VIRTUAL_OUT.CRT_4,    input: VIRTUAL_IN.COMP_4,  componentMatrix: [COMP_OUT.CRT_4, COMP_IN.COMP_4]},
+
+		// LCD, Component input.
+		{output: VIRTUAL_OUT.LCD_4,    input: VIRTUAL_IN.COMP_1,  hdmiMatrix: [HDMI_OUT.LCD_4,     HDMI_IN.OSSC_1], componentMatrix: [COMP_OUT.OSSC_1, COMP_IN.COMP_1]},
+		{output: VIRTUAL_OUT.LCD_4,    input: VIRTUAL_IN.COMP_2,  hdmiMatrix: [HDMI_OUT.LCD_4,     HDMI_IN.OSSC_2], componentMatrix: [COMP_OUT.OSSC_2, COMP_IN.COMP_2]},
+		{output: VIRTUAL_OUT.LCD_4,    input: VIRTUAL_IN.COMP_3,  hdmiMatrix: [HDMI_OUT.LCD_4,     HDMI_IN.OSSC_3], componentMatrix: [COMP_OUT.OSSC_3, COMP_IN.COMP_3]},
+		{output: VIRTUAL_OUT.LCD_4,    input: VIRTUAL_IN.COMP_4,  hdmiMatrix: [HDMI_OUT.LCD_4,     HDMI_IN.OSSC_4], componentMatrix: [COMP_OUT.OSSC_4, COMP_IN.COMP_4]},
 
 		// HDMI output, SCART input.
-		{output: VIRTUAL_OUT.STREAM_1, input: VIRTUAL_IN.SCART_1, hdmiMatrix: [HDMI_OUT.STREAM_1, HDMI_IN.OSSC_1], componentMatrix: [[COMP_OUT.OSSC_1, COMP_IN.SCART_1]]},
-		{output: VIRTUAL_OUT.STREAM_1, input: VIRTUAL_IN.SCART_2, hdmiMatrix: [HDMI_OUT.STREAM_1, HDMI_IN.OSSC_2], componentMatrix: [[COMP_OUT.OSSC_2, COMP_IN.SCART_2]]},
-		{output: VIRTUAL_OUT.STREAM_1, input: VIRTUAL_IN.SCART_3, hdmiMatrix: [HDMI_OUT.STREAM_1, HDMI_IN.OSSC_3], componentMatrix: [[COMP_OUT.OSSC_3, COMP_IN.SCART_3]]},
-		{output: VIRTUAL_OUT.STREAM_1, input: VIRTUAL_IN.SCART_4, hdmiMatrix: [HDMI_OUT.STREAM_1, HDMI_IN.OSSC_4], componentMatrix: [[COMP_OUT.OSSC_4, COMP_IN.SCART_4]]},
+		{output: VIRTUAL_OUT.STREAM_1, input: VIRTUAL_IN.SCART_1, hdmiMatrix: [HDMI_OUT.STREAM_1, HDMI_IN.OSSC_1], componentMatrix: [COMP_OUT.OSSC_1, COMP_IN.SCART_1]},
+		{output: VIRTUAL_OUT.STREAM_1, input: VIRTUAL_IN.SCART_2, hdmiMatrix: [HDMI_OUT.STREAM_1, HDMI_IN.OSSC_2], componentMatrix: [COMP_OUT.OSSC_2, COMP_IN.SCART_2]},
+		{output: VIRTUAL_OUT.STREAM_1, input: VIRTUAL_IN.SCART_3, hdmiMatrix: [HDMI_OUT.STREAM_1, HDMI_IN.OSSC_3], componentMatrix: [COMP_OUT.OSSC_3, COMP_IN.SCART_3]},
+		{output: VIRTUAL_OUT.STREAM_1, input: VIRTUAL_IN.SCART_4, hdmiMatrix: [HDMI_OUT.STREAM_1, HDMI_IN.OSSC_4], componentMatrix: [COMP_OUT.OSSC_4, COMP_IN.SCART_4]},
 
-		// CRT/LCD output, SCART input.
-		{output: VIRTUAL_OUT.TV_4,     input: VIRTUAL_IN.SCART_1, hdmiMatrix: [HDMI_OUT.LCD_4,     HDMI_IN.OSSC_1], componentMatrix: [[COMP_OUT.OSSC_1, COMP_IN.SCART_1], [COMP_OUT.CRT_4, COMP_IN.SCART_1]]},
-		{output: VIRTUAL_OUT.TV_4,     input: VIRTUAL_IN.SCART_2, hdmiMatrix: [HDMI_OUT.LCD_4,     HDMI_IN.OSSC_2], componentMatrix: [[COMP_OUT.OSSC_2, COMP_IN.SCART_2], [COMP_OUT.CRT_4, COMP_IN.SCART_2]]},
-		{output: VIRTUAL_OUT.TV_4,     input: VIRTUAL_IN.SCART_3, hdmiMatrix: [HDMI_OUT.LCD_4,     HDMI_IN.OSSC_3], componentMatrix: [[COMP_OUT.OSSC_3, COMP_IN.SCART_3], [COMP_OUT.CRT_4, COMP_IN.SCART_3]]},
-		{output: VIRTUAL_OUT.TV_4,     input: VIRTUAL_IN.SCART_4, hdmiMatrix: [HDMI_OUT.LCD_4,     HDMI_IN.OSSC_4], componentMatrix: [[COMP_OUT.OSSC_4, COMP_IN.SCART_4], [COMP_OUT.CRT_4, COMP_IN.SCART_4]]}
+		// CRT, SCART input.
+		{output: VIRTUAL_OUT.CRT_4,    input: VIRTUAL_IN.SCART_1, componentMatrix: [COMP_OUT.CRT_4, COMP_IN.SCART_1]},
+		{output: VIRTUAL_OUT.CRT_4,    input: VIRTUAL_IN.SCART_2, componentMatrix: [COMP_OUT.CRT_4, COMP_IN.SCART_2]},
+		{output: VIRTUAL_OUT.CRT_4,    input: VIRTUAL_IN.SCART_3, componentMatrix: [COMP_OUT.CRT_4, COMP_IN.SCART_3]},
+		{output: VIRTUAL_OUT.CRT_4,    input: VIRTUAL_IN.SCART_4, componentMatrix: [COMP_OUT.CRT_4, COMP_IN.SCART_4]},
+
+		// LCD output, SCART input.
+		{output: VIRTUAL_OUT.LCD_4,    input: VIRTUAL_IN.SCART_1, hdmiMatrix: [HDMI_OUT.LCD_4,     HDMI_IN.OSSC_1], componentMatrix: [COMP_OUT.OSSC_1, COMP_IN.SCART_1]},
+		{output: VIRTUAL_OUT.LCD_4,    input: VIRTUAL_IN.SCART_2, hdmiMatrix: [HDMI_OUT.LCD_4,     HDMI_IN.OSSC_2], componentMatrix: [COMP_OUT.OSSC_2, COMP_IN.SCART_2]},
+		{output: VIRTUAL_OUT.LCD_4,    input: VIRTUAL_IN.SCART_3, hdmiMatrix: [HDMI_OUT.LCD_4,     HDMI_IN.OSSC_3], componentMatrix: [COMP_OUT.OSSC_3, COMP_IN.SCART_3]},
+		{output: VIRTUAL_OUT.LCD_4,    input: VIRTUAL_IN.SCART_4, hdmiMatrix: [HDMI_OUT.LCD_4,     HDMI_IN.OSSC_4], componentMatrix: [COMP_OUT.OSSC_4, COMP_IN.SCART_4]}
 	] as {
 		output: VIRTUAL_OUT;
 		input: VIRTUAL_IN;
-		hdmiMatrix: [HDMI_OUT, HDMI_IN];
-		componentMatrix?: [COMP_OUT, COMP_IN][];
+		hdmiMatrix?: [HDMI_OUT, HDMI_IN];
+		componentMatrix?: [COMP_OUT, COMP_IN];
 	}[];
 	/* tslint:enable:no-multi-spaces */
 
@@ -106,13 +118,13 @@ test('calls setOutput on the matrix instances when SET_OUTPUT is invoked', async
 		await sleep(100);
 
 		// Assert.
-		expect(hdmiStub.callCount).toBe(1);
-		expect(hdmiStub.lastCall.args).toEqual(testCase.hdmiMatrix);
+		if (testCase.hdmiMatrix) {
+			expect(hdmiStub.callCount).toBe(1);
+			expect(hdmiStub.lastCall.args).toEqual(testCase.hdmiMatrix);
+		}
 		if (testCase.componentMatrix) {
-			expect(componentStub.callCount).toBe(testCase.componentMatrix.length);
-			const calls = componentStub.getCalls();
-			const args = calls.map(call => call.args);
-			expect(args).toEqual(testCase.componentMatrix);
+			expect(componentStub.callCount).toBe(1);
+			expect(componentStub.lastCall.args).toEqual(testCase.componentMatrix);
 		}
 	}
 
