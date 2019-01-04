@@ -14,9 +14,14 @@ import config from './config';
 import {SOCKET_MESSAGES} from '../types/socket';
 import {HdmiMatrix} from './matricies/hdmi-matrix';
 import {ComponentMatrix} from './matricies/component-matrix';
-import {COMP_IN, COMP_OUT, HDMI_IN, VIRTUAL_IN, VIRTUAL_OUT} from '../types/matrix-mappings';
+import {COMP_IN, COMP_OUT, HDMI_IN, HDMI_OUT, VIRTUAL_IN, VIRTUAL_OUT} from '../types/matrix-mappings';
 import debounce = require('lodash.debounce');
-import {compInputToVirtualInput, virtualOutputToComponentOutput, virtualOutputToHdmiOutput} from './conversions';
+import {
+	compInputToVirtualInput,
+	hdmiInputToVirtualInput,
+	virtualOutputToComponentOutput,
+	virtualOutputToHdmiOutput
+} from './conversions';
 
 if (process.env.NODE_ENV !== 'test') {
 	SerialPort.Binding = Binding;
@@ -184,31 +189,23 @@ function validateAndClamp(unparsed: unknown, max: number) {
 }
 
 function _updateState() {
-	const len = state.outputs.length;
-	for (let outputChannel = 0; outputChannel < len; outputChannel++) {
-		let computedOutput = 0;
+	// Update Streams
+	state.outputs[VIRTUAL_OUT.STREAM_1] = hdmiInputToVirtualInput(hdmiMatrix.state.outputs[HDMI_OUT.STREAM_1]);
+	state.outputs[VIRTUAL_OUT.STREAM_2] = hdmiInputToVirtualInput(hdmiMatrix.state.outputs[HDMI_OUT.STREAM_2]);
+	state.outputs[VIRTUAL_OUT.STREAM_3] = hdmiInputToVirtualInput(hdmiMatrix.state.outputs[HDMI_OUT.STREAM_3]);
+	state.outputs[VIRTUAL_OUT.STREAM_4] = hdmiInputToVirtualInput(hdmiMatrix.state.outputs[HDMI_OUT.STREAM_4]);
 
-		const hdmiInput = hdmiMatrix.state.outputs[outputChannel];
-		if (hdmiInput === HDMI_IN.HD_1) {
-			computedOutput = VIRTUAL_IN.HDMI_1	;
-		} else if (hdmiInput === HDMI_IN.HD_2) {
-			computedOutput = VIRTUAL_IN.HDMI_2;
-		} else if (hdmiInput === HDMI_IN.HD_3) {
-			computedOutput = VIRTUAL_IN.HDMI_3;
-		} else if (hdmiInput === HDMI_IN.HD_4) {
-			computedOutput = VIRTUAL_IN.HDMI_4;
-		} else if (hdmiInput === HDMI_IN.OSSC_1) {
-			computedOutput = compInputToVirtualInput(componentMatrix.state.outputs[COMP_OUT.OSSC_1]);
-		} else if (hdmiInput === HDMI_IN.OSSC_2) {
-			computedOutput = compInputToVirtualInput(componentMatrix.state.outputs[COMP_OUT.OSSC_2]);
-		} else if (hdmiInput === HDMI_IN.OSSC_3) {
-			computedOutput = compInputToVirtualInput(componentMatrix.state.outputs[COMP_OUT.OSSC_3]);
-		} else if (hdmiInput === HDMI_IN.OSSC_4) {
-			computedOutput = compInputToVirtualInput(componentMatrix.state.outputs[COMP_OUT.OSSC_4]);
-		}
+	// Update LCDs
+	state.outputs[VIRTUAL_OUT.LCD_1] = hdmiInputToVirtualInput(hdmiMatrix.state.outputs[HDMI_OUT.LCD_1]);
+	state.outputs[VIRTUAL_OUT.LCD_2] = hdmiInputToVirtualInput(hdmiMatrix.state.outputs[HDMI_OUT.LCD_2]);
+	state.outputs[VIRTUAL_OUT.LCD_3] = hdmiInputToVirtualInput(hdmiMatrix.state.outputs[HDMI_OUT.LCD_3]);
+	state.outputs[VIRTUAL_OUT.LCD_4] = hdmiInputToVirtualInput(hdmiMatrix.state.outputs[HDMI_OUT.LCD_4]);
 
-		state.outputs[outputChannel] = computedOutput;
-	}
+	// Update CRTs
+	state.outputs[VIRTUAL_OUT.CRT_1] = compInputToVirtualInput(componentMatrix.state.outputs[COMP_OUT.CRT_1]);
+	state.outputs[VIRTUAL_OUT.CRT_2] = compInputToVirtualInput(componentMatrix.state.outputs[COMP_OUT.CRT_2]);
+	state.outputs[VIRTUAL_OUT.CRT_3] = compInputToVirtualInput(componentMatrix.state.outputs[COMP_OUT.CRT_3]);
+	state.outputs[VIRTUAL_OUT.CRT_4] = compInputToVirtualInput(componentMatrix.state.outputs[COMP_OUT.CRT_4]);
 
 	console.log('----------------------------------');
 	console.log('hdmiMatrix state:     ', hdmiMatrix.state);
