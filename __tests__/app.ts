@@ -125,14 +125,3 @@ afterAll(done => {
 	clientSocket.close();
 	stop(done);
 });
-
-// SCART 4 going to Stream 4 and TV 4
-// everything else on one
-// good, ok
-
-// send component 4 to stream 4
-// also moves component 4 to CRT/LCD 4 on the screen, but not in reality
-// TV STAYS ON SCART
-
-// component 4 to crt/lcd 4 fixes it
-
