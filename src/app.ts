@@ -2,22 +2,21 @@
 
 // Native
 import * as http from 'http';
-
 // Packages
 import * as express from 'express';
 import * as socketIO from 'socket.io';
 import * as SerialPort from '@serialport/stream';
 import * as Binding from '@serialport/bindings';
 import transformMiddleware from 'express-transform-bare-module-specifiers';
-import debounce = require('lodash.debounce');
 import * as Sentry from '@sentry/node';
-
 // Ours
 import config from './config';
 import {SOCKET_MESSAGES} from '../types/socket';
 import {HdmiMatrix} from './matricies/hdmi-matrix';
 import {ComponentMatrix} from './matricies/component-matrix';
-import {COMP_IN, COMP_OUT, HDMI_IN, HDMI_OUT, IN, OUT} from '../types/matrix-mappings';
+import {COMP_IN, COMP_OUT, HDMI_IN, VIRTUAL_IN, VIRTUAL_OUT} from '../types/matrix-mappings';
+import debounce = require('lodash.debounce');
+import {compInputToVirtualInput, virtualOutputToComponentOutput, virtualOutputToHdmiOutput} from './conversions';
 
 if (process.env.NODE_ENV !== 'test') {
 	SerialPort.Binding = Binding;
@@ -63,72 +62,46 @@ io.on('connection', socket => {
 	});
 
 	socket.on(SOCKET_MESSAGES.SET_OUTPUT, (unparsedOutput: unknown, unparsedInput: unknown) => {
-		const output = validateAndClamp(unparsedOutput, Object.keys(OUT).length - 1) as OUT;
-		const input = validateAndClamp(unparsedInput, Object.keys(IN).length - 1) as IN;
+		const output = validateAndClamp(unparsedOutput, Object.keys(VIRTUAL_OUT).length - 1) as VIRTUAL_OUT;
+		const input = validateAndClamp(unparsedInput, Object.keys(VIRTUAL_IN).length - 1) as VIRTUAL_IN;
 		console.log('SET_OUTPUT | output: %s, input: %s', output, input);
 
 		if (isHdmiInput(input)) {
-			const offset = HDMI_IN.HD_1 - IN.HDMI_1;
+			const offset = HDMI_IN.HD_1 - VIRTUAL_IN.HDMI_1;
 			hdmiMatrix.setOutput(output, input + offset);
-			// TODO: is this the source of the bug?
 		} else {
-			const osscOutput = calcOsscOutput(input);
 			switch (input) {
-				case IN.COMP_1:
-					hdmiMatrix.setOutput(output, HDMI_IN.OSSC_1);
-					componentMatrix.setOutput(osscOutput, COMP_IN.COMP_1);
-					if (isTvOutput(output)) {
-						componentMatrix.setOutput(output, COMP_IN.COMP_1);
-					}
+				case VIRTUAL_IN.COMP_1:
+					hdmiMatrix.setOutput(virtualOutputToHdmiOutput(output), HDMI_IN.OSSC_1);
+					componentMatrix.setOutput(virtualOutputToComponentOutput(output, input), COMP_IN.COMP_1);
 					break;
-				case IN.COMP_2:
-					hdmiMatrix.setOutput(output, HDMI_IN.OSSC_2);
-					componentMatrix.setOutput(osscOutput, COMP_IN.COMP_2);
-					if (isTvOutput(output)) {
-						componentMatrix.setOutput(output, COMP_IN.COMP_2);
-					}
+				case VIRTUAL_IN.COMP_2:
+					hdmiMatrix.setOutput(virtualOutputToHdmiOutput(output), HDMI_IN.OSSC_2);
+					componentMatrix.setOutput(virtualOutputToComponentOutput(output, input), COMP_IN.COMP_2);
 					break;
-				case IN.COMP_3:
-					hdmiMatrix.setOutput(output, HDMI_IN.OSSC_3);
-					componentMatrix.setOutput(osscOutput, COMP_IN.COMP_3);
-					if (isTvOutput(output)) {
-						componentMatrix.setOutput(output, COMP_IN.COMP_3);
-					}
+				case VIRTUAL_IN.COMP_3:
+					hdmiMatrix.setOutput(virtualOutputToHdmiOutput(output), HDMI_IN.OSSC_3);
+					componentMatrix.setOutput(virtualOutputToComponentOutput(output, input), COMP_IN.COMP_3);
 					break;
-				case IN.COMP_4:
-					hdmiMatrix.setOutput(output, HDMI_IN.OSSC_4);
-					componentMatrix.setOutput(osscOutput, COMP_IN.COMP_4);
-					if (isTvOutput(output)) {
-						componentMatrix.setOutput(output, COMP_IN.COMP_4);
-					}
+				case VIRTUAL_IN.COMP_4:
+					hdmiMatrix.setOutput(virtualOutputToHdmiOutput(output), HDMI_IN.OSSC_4);
+					componentMatrix.setOutput(virtualOutputToComponentOutput(output, input), COMP_IN.COMP_4);
 					break;
-				case IN.SCART_1:
-					hdmiMatrix.setOutput(output, HDMI_IN.OSSC_1);
-					componentMatrix.setOutput(osscOutput, COMP_IN.SCART_1);
-					if (isTvOutput(output)) {
-						componentMatrix.setOutput(output, COMP_IN.SCART_1);
-					}
+				case VIRTUAL_IN.SCART_1:
+					hdmiMatrix.setOutput(virtualOutputToHdmiOutput(output), HDMI_IN.OSSC_1);
+					componentMatrix.setOutput(virtualOutputToComponentOutput(output, input), COMP_IN.SCART_1);
 					break;
-				case IN.SCART_2:
-					hdmiMatrix.setOutput(output, HDMI_IN.OSSC_2);
-					componentMatrix.setOutput(osscOutput, COMP_IN.SCART_2);
-					if (isTvOutput(output)) {
-						componentMatrix.setOutput(output, COMP_IN.SCART_2);
-					}
+				case VIRTUAL_IN.SCART_2:
+					hdmiMatrix.setOutput(virtualOutputToHdmiOutput(output), HDMI_IN.OSSC_2);
+					componentMatrix.setOutput(virtualOutputToComponentOutput(output, input), COMP_IN.SCART_2);
 					break;
-				case IN.SCART_3:
-					hdmiMatrix.setOutput(output, HDMI_IN.OSSC_3);
-					componentMatrix.setOutput(osscOutput, COMP_IN.SCART_3);
-					if (isTvOutput(output)) {
-						componentMatrix.setOutput(output, COMP_IN.SCART_3);
-					}
+				case VIRTUAL_IN.SCART_3:
+					hdmiMatrix.setOutput(virtualOutputToHdmiOutput(output), HDMI_IN.OSSC_3);
+					componentMatrix.setOutput(virtualOutputToComponentOutput(output, input), COMP_IN.SCART_3);
 					break;
-				case IN.SCART_4:
-					hdmiMatrix.setOutput(output, HDMI_IN.OSSC_4);
-					componentMatrix.setOutput(osscOutput, COMP_IN.SCART_4);
-					if (isTvOutput(output)) {
-						componentMatrix.setOutput(output, COMP_IN.SCART_4);
-					}
+				case VIRTUAL_IN.SCART_4:
+					hdmiMatrix.setOutput(virtualOutputToHdmiOutput(output), HDMI_IN.OSSC_4);
+					componentMatrix.setOutput(virtualOutputToComponentOutput(output, input), COMP_IN.SCART_4);
 					break;
 				default:
 					// Do nothing.
@@ -182,23 +155,7 @@ export function stop(done: Function) {
 }
 
 function isHdmiInput(input: number) {
-	return input >= IN.HDMI_1 && input <= IN.HDMI_4;
-}
-
-function isTvOutput(output: number) {
-	return output >= OUT.TV_1 && output <= OUT.TV_4;
-}
-
-function calcOsscOutput(input: IN): COMP_OUT {
-	let osscOutput = COMP_OUT.OSSC_1;
-	if (input === IN.COMP_2 || input === IN.SCART_2) {
-		osscOutput = COMP_OUT.OSSC_2;
-	} else if (input === IN.COMP_3 || input === IN.SCART_3) {
-		osscOutput = COMP_OUT.OSSC_3;
-	} else if (input === IN.COMP_4 || input === IN.SCART_4) {
-		osscOutput = COMP_OUT.OSSC_4;
-	}
-	return osscOutput;
+	return input >= VIRTUAL_IN.HDMI_1 && input <= VIRTUAL_IN.HDMI_4;
 }
 
 function validateAndClamp(unparsed: unknown, max: number) {
@@ -233,13 +190,13 @@ function _updateState() {
 
 		const hdmiInput = hdmiMatrix.state.outputs[outputChannel];
 		if (hdmiInput === HDMI_IN.HD_1) {
-			computedOutput = IN.HDMI_1	;
+			computedOutput = VIRTUAL_IN.HDMI_1	;
 		} else if (hdmiInput === HDMI_IN.HD_2) {
-			computedOutput = IN.HDMI_2;
+			computedOutput = VIRTUAL_IN.HDMI_2;
 		} else if (hdmiInput === HDMI_IN.HD_3) {
-			computedOutput = IN.HDMI_3;
+			computedOutput = VIRTUAL_IN.HDMI_3;
 		} else if (hdmiInput === HDMI_IN.HD_4) {
-			computedOutput = IN.HDMI_4;
+			computedOutput = VIRTUAL_IN.HDMI_4;
 		} else if (hdmiInput === HDMI_IN.OSSC_1) {
 			computedOutput = compInputToVirtualInput(componentMatrix.state.outputs[COMP_OUT.OSSC_1]);
 		} else if (hdmiInput === HDMI_IN.OSSC_2) {
@@ -251,7 +208,6 @@ function _updateState() {
 		}
 
 		state.outputs[outputChannel] = computedOutput;
-		nullRouteMismatchedTVs(computedOutput);
 	}
 
 	console.log('----------------------------------');
@@ -260,93 +216,4 @@ function _updateState() {
 	console.log('app state:            ', state);
 	console.log('----------------------------------');
 	io.emit(SOCKET_MESSAGES.OUTPUT_STATUSES, state.outputs);
-}
-
-function compInputToVirtualInput(compInput: COMP_IN): IN {
-	if (compInput === COMP_IN.COMP_1) {
-		return IN.COMP_1;
-	}
-	if (compInput === COMP_IN.COMP_2) {
-		return IN.COMP_2;
-	}
-	if (compInput === COMP_IN.COMP_3) {
-		return IN.COMP_3;
-	}
-	if (compInput === COMP_IN.COMP_4) {
-		return IN.COMP_4;
-	}
-	if (compInput === COMP_IN.SCART_1) {
-		return IN.SCART_1;
-	}
-	if (compInput === COMP_IN.SCART_2) {
-		return IN.SCART_2;
-	}
-	if (compInput === COMP_IN.SCART_3) {
-		return IN.SCART_3;
-	}
-	return IN.SCART_4;
-}
-
-function hdmiInputToVirtualInput(hdmiInput: HDMI_IN): IN {
-	if (hdmiInput === HDMI_IN.OSSC_1) {
-		return compInputToVirtualInput(componentMatrix.state.outputs[COMP_OUT.OSSC_1]);
-	}
-	if (hdmiInput === HDMI_IN.OSSC_2) {
-		return compInputToVirtualInput(componentMatrix.state.outputs[COMP_OUT.OSSC_2]);
-	}
-	if (hdmiInput === HDMI_IN.OSSC_3) {
-		return compInputToVirtualInput(componentMatrix.state.outputs[COMP_OUT.OSSC_3]);
-	}
-	if (hdmiInput === HDMI_IN.OSSC_4) {
-		return compInputToVirtualInput(componentMatrix.state.outputs[COMP_OUT.OSSC_4]);
-	}
-	if (hdmiInput === HDMI_IN.HD_1) {
-		return IN.HDMI_1;
-	}
-	if (hdmiInput === HDMI_IN.HD_2) {
-		return IN.HDMI_2;
-	}
-	if (hdmiInput === HDMI_IN.HD_3) {
-		return IN.HDMI_3;
-	}
-	return IN.HDMI_4;
-}
-
-function nullRouteMismatchedTVs(computedOutput: OUT) {
-	switch (computedOutput) {
-		case OUT.TV_1:
-			const CRT1 = compInputToVirtualInput(componentMatrix.state.outputs[COMP_OUT.CRT_1]);
-			const LCD1 = hdmiInputToVirtualInput(hdmiMatrix.state.outputs[HDMI_OUT.TV_1]);
-			if (CRT1 !== LCD1) {
-				state.outputs[OUT.TV_1] = OUT.NULL;
-				console.log('Null routing TV1');
-			}
-			break;
-		case OUT.TV_2:
-			const CRT2 = compInputToVirtualInput(componentMatrix.state.outputs[COMP_OUT.CRT_2]);
-			const LCD2 = hdmiInputToVirtualInput(hdmiMatrix.state.outputs[HDMI_OUT.TV_2]);
-			if (CRT2 !== LCD2) {
-				state.outputs[OUT.TV_2] = OUT.NULL;
-				console.log('Null routing TV2');
-			}
-			break;
-		case OUT.TV_3:
-			const CRT3 = compInputToVirtualInput(componentMatrix.state.outputs[COMP_OUT.CRT_3]);
-			const LCD3 = hdmiInputToVirtualInput(hdmiMatrix.state.outputs[HDMI_OUT.TV_3]);
-			if (CRT3 !== LCD3) {
-				state.outputs[OUT.TV_3] = OUT.NULL;
-				console.log('Null routing TV3');
-			}
-			break;
-		case OUT.TV_4:
-			const CRT4 = compInputToVirtualInput(componentMatrix.state.outputs[COMP_OUT.CRT_4]);
-			const LCD4 = hdmiInputToVirtualInput(hdmiMatrix.state.outputs[HDMI_OUT.TV_4]);
-			if (CRT4 !== LCD4) {
-				state.outputs[OUT.TV_4] = OUT.NULL;
-				console.log('Null routing TV4');
-			}
-			break;
-		default:
-			// Do nothing.
-	}
 }

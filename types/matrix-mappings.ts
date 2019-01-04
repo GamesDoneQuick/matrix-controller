@@ -1,16 +1,20 @@
-export enum OUT {
+export enum VIRTUAL_OUT {
 	NULL = -1,
 	STREAM_1,
 	STREAM_2,
 	STREAM_3,
 	STREAM_4,
-	TV_1,
-	TV_2,
-	TV_3,
-	TV_4
+	LCD_1,
+	LCD_2,
+	LCD_3,
+	LCD_4,
+	CRT_1,
+	CRT_2,
+	CRT_3,
+	CRT_4
 }
 
-export enum IN {
+export enum VIRTUAL_IN {
 	SCART_1,
 	SCART_2,
 	SCART_3,
@@ -26,14 +30,15 @@ export enum IN {
 }
 
 export const enum HDMI_OUT {
+	NULL = 1,
 	STREAM_1,
 	STREAM_2,
 	STREAM_3,
 	STREAM_4,
-	TV_1,
-	TV_2,
-	TV_3,
-	TV_4
+	LCD_1,
+	LCD_2,
+	LCD_3,
+	LCD_4
 }
 
 export const enum HDMI_IN {
@@ -48,6 +53,7 @@ export const enum HDMI_IN {
 }
 
 export const enum COMP_OUT {
+	NULL = 1,
 	OSSC_1,
 	OSSC_2,
 	OSSC_3,
