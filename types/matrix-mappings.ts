@@ -30,7 +30,7 @@ export enum VIRTUAL_IN {
 }
 
 export const enum HDMI_OUT {
-	NULL = 1,
+	NULL = -1,
 	STREAM_1,
 	STREAM_2,
 	STREAM_3,
@@ -53,7 +53,7 @@ export const enum HDMI_IN {
 }
 
 export const enum COMP_OUT {
-	NULL = 1,
+	NULL = -1,
 	OSSC_1,
 	OSSC_2,
 	OSSC_3,
