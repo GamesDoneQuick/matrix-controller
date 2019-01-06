@@ -28,7 +28,7 @@
     "typescript": "^3.2.2"
   },
   "scripts": {
-    "start": "ts-node src/index.ts",
+    "start": "ts-node --no-cache src/index.ts",
     "debug": "node --inspect -r ts-node/register src/index.ts",
     "pretest": "npm run static",
     "test": "jest --coverage --no-cache",
