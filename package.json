@@ -31,7 +31,7 @@
     "start": "ts-node src/index.ts",
     "debug": "node --inspect -r ts-node/register src/index.ts",
     "pretest": "npm run static",
-    "test": "jest --coverage",
+    "test": "jest --coverage --no-cache",
     "static": "tslint -c tslint.json 'src/**/*.ts' public/app.ts '__tests__/**/*.ts'",
     "prebuild": "npm run static",
     "build": "tsc -p public/tsconfig.json",

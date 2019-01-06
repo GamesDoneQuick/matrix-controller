@@ -67,12 +67,12 @@ export const enum COMP_OUT {
 
 export const enum COMP_IN {
 	NULL = -1,
-	SCART_4,
-	SCART_3,
-	SCART_2,
 	SCART_1,
-	COMP_4,
-	COMP_3,
+	SCART_2,
+	SCART_3,
+	SCART_4,
+	COMP_1,
 	COMP_2,
-	COMP_1
+	COMP_3,
+	COMP_4
 }
