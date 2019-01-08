@@ -71,18 +71,23 @@ io.on('connection', socket => {
 		const input = validateAndClamp(unparsedInput, Object.keys(VIRTUAL_IN).length - 1) as VIRTUAL_IN;
 		console.log('SET_OUTPUT | output: %s, input: %s', output, input);
 
-		const routedComponent = componentMatrix.setOutput(
-			virtualOutputToComponentOutput(output, input),
-			virtualInputToComponentInput(input)
-		);
+		if (config.get('skipMatricies')) {
+			state.outputs[output] = input;
+			socket.emit(SOCKET_MESSAGES.OUTPUT_STATUSES, state.outputs);
+		} else {
+			const routedComponent = componentMatrix.setOutput(
+				virtualOutputToComponentOutput(output, input),
+				virtualInputToComponentInput(input)
+			);
 
-		const routedHDMI = hdmiMatrix.setOutput(
-			virtualOutputToHdmiOutput(output),
-			virtualInputToHdmiInput(input)
-		);
+			const routedHDMI = hdmiMatrix.setOutput(
+				virtualOutputToHdmiOutput(output),
+				virtualInputToHdmiInput(input)
+			);
 
-		if (!routedComponent || !routedHDMI) {
-			updateState();
+			if (!routedComponent || !routedHDMI) {
+				updateState();
+			}
 		}
 	});
 });
