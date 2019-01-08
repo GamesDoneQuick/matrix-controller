@@ -1,12 +1,6 @@
 const PAINT_STYLE = {
-    gradient: {
-        stops: [
-            [0, '#0d78bc'],
-            [1, '#558822']
-        ]
-    },
-    stroke: '#558822',
-    strokeWidth: 10
+    stroke: 'white',
+    strokeWidth: 12
 };
 const ENDPOINT_STYLE = ['Blank', { radius: 0 }];
 const socket = io();
@@ -69,9 +63,28 @@ socket.on("OUTPUT_STATUSES" /* OUTPUT_STATUSES */, (outputs) => {
     console.log('OUTPUT_STATUSES:', outputs);
     outputs.forEach((input, outputIndex) => {
         console.log(`output ${outputIndex} gets input ${input}`);
+        const sourceElem = document.querySelector(`#inputs .window:nth-child(${input + 1})`);
+        const destElem = document.querySelector(`#outputs .window:nth-child(${outputIndex + 1})`);
+        if (!sourceElem || !destElem) {
+            return;
+        }
+        const sourceBgColor = window.getComputedStyle(sourceElem).backgroundColor;
+        const destBgColor = window.getComputedStyle(destElem).backgroundColor;
         instance.connect({
-            source: document.querySelector(`#inputs .window:nth-child(${input + 1})`),
-            target: document.querySelector(`#outputs .window:nth-child(${outputIndex + 1})`)
+            source: sourceElem,
+            target: destElem,
+            paintStyle: {
+                gradient: {
+                    stops: [
+                        [0, sourceBgColor],
+                        [1, destBgColor]
+                    ]
+                },
+                stroke: destBgColor,
+                strokeWidth: 10,
+                outlineWidth: 2,
+                outlineStroke: 'white'
+            }
         });
     });
 });
