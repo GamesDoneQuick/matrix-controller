@@ -3,7 +3,6 @@ const PAINT_STYLE = {
     strokeWidth: 12
 };
 const ENDPOINT_STYLE = ['Blank', { radius: 0 }];
-const socket = io();
 // It is very important that we always refer to this instance, and never to the jsPlumb global.
 const instance = jsPlumb.getInstance({
     // Drag options.
@@ -26,18 +25,6 @@ instance.bind('beforeDrop', ci => {
     // True for establishing new connection.
     return true;
 });
-// Bind to a connection event, just for the purposes of pointing out that it can be done.
-instance.bind('connection', (connection, originalEvent) => {
-    // Only react to user-initiated connections.
-    // Programmatic connections have no originalEvent, so we can filter them out.
-    if (!originalEvent) {
-        return;
-    }
-    const inputIndex = parseInt(connection.source.getAttribute('data-index') || '', 10);
-    const outputIndex = parseInt(connection.target.getAttribute('data-index') || '', 10);
-    console.log('connection from %s to %s', inputIndex, outputIndex);
-    socket.emit("SET_OUTPUT" /* SET_OUTPUT */, outputIndex, inputIndex);
-});
 // Configure outputs as targets.
 document.querySelectorAll('#outputs .window').forEach((outputEl, index) => {
     instance.makeTarget(outputEl, {
@@ -55,37 +42,60 @@ document.querySelectorAll('#inputs .window').forEach((inputEl, index) => {
     });
     inputEl.setAttribute('data-index', String(index));
 });
-// Set up socket.
-socket.on("OUTPUT_STATUSES" /* OUTPUT_STATUSES */, (outputs) => {
-    document.querySelectorAll('#outputs .window').forEach(element => {
-        instance.deleteConnectionsForElement(element);
+if (document.readyState === 'complete') {
+    init();
+}
+else {
+    window.addEventListener('load', () => {
+        init();
     });
-    console.log('OUTPUT_STATUSES:', outputs);
-    outputs.forEach((input, outputIndex) => {
-        console.log(`output ${outputIndex} gets input ${input}`);
-        const sourceElem = document.querySelector(`#inputs .window:nth-child(${input + 1})`);
-        const destElem = document.querySelector(`#outputs .window:nth-child(${outputIndex + 1})`);
-        if (!sourceElem || !destElem) {
+}
+function init() {
+    const socket = io();
+    // Bind to a connection event, just for the purposes of pointing out that it can be done.
+    instance.bind('connection', (connection, originalEvent) => {
+        // Only react to user-initiated connections.
+        // Programmatic connections have no originalEvent, so we can filter them out.
+        if (!originalEvent) {
             return;
         }
-        const sourceBgColor = window.getComputedStyle(sourceElem).backgroundColor;
-        const destBgColor = window.getComputedStyle(destElem).backgroundColor;
-        instance.connect({
-            source: sourceElem,
-            target: destElem,
-            paintStyle: {
-                gradient: {
-                    stops: [
-                        [0, sourceBgColor],
-                        [1, destBgColor]
-                    ]
-                },
-                stroke: destBgColor,
-                strokeWidth: 10,
-                outlineWidth: 2,
-                outlineStroke: 'white'
+        const inputIndex = parseInt(connection.source.getAttribute('data-index') || '', 10);
+        const outputIndex = parseInt(connection.target.getAttribute('data-index') || '', 10);
+        console.log('connection from %s to %s', inputIndex, outputIndex);
+        socket.emit("SET_OUTPUT" /* SET_OUTPUT */, outputIndex, inputIndex);
+    });
+    // Set up socket.
+    socket.on("OUTPUT_STATUSES" /* OUTPUT_STATUSES */, (outputs) => {
+        document.querySelectorAll('#outputs .window').forEach(element => {
+            instance.deleteConnectionsForElement(element);
+        });
+        console.log('OUTPUT_STATUSES:', outputs);
+        outputs.forEach((input, outputIndex) => {
+            console.log(`output ${outputIndex} gets input ${input}`);
+            const sourceElem = document.querySelector(`#inputs .window:nth-child(${input + 1})`);
+            const destElem = document.querySelector(`#outputs .window:nth-child(${outputIndex + 1})`);
+            if (!sourceElem || !destElem) {
+                return;
             }
+            const sourceBgColor = window.getComputedStyle(sourceElem).backgroundColor;
+            const destBgColor = window.getComputedStyle(destElem).backgroundColor;
+            instance.connect({
+                source: sourceElem,
+                target: destElem,
+                paintStyle: {
+                    gradient: {
+                        stops: [
+                            [0, sourceBgColor],
+                            [1, destBgColor]
+                        ]
+                    },
+                    stroke: destBgColor,
+                    strokeWidth: 10,
+                    outlineWidth: 2,
+                    outlineStroke: 'white'
+                }
+            });
         });
     });
-});
+}
 //# sourceMappingURL=app.js.map
