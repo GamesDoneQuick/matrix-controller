@@ -35,7 +35,7 @@
     "static": "tslint -c tslint.json 'src/**/*.ts' public/app.ts '__tests__/**/*.ts'",
     "prebuild": "npm run static",
     "build": "tsc -p public/tsconfig.json",
-    "postbuild": "sed -i~ 1d public/app.js",
+    "postbuild": "sed -i~ 2d public/app.js",
     "watch": "tsc -p public/tsconfig.json --watch",
     "prerelease": "npm run build && npm run test",
     "release": "standard-version",

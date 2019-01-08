@@ -1,3 +1,4 @@
+///<reference lib="dom"/>
 import {jsPlumb} from 'jsplumb';
 import {SOCKET_MESSAGES} from '../types/socket';
 
@@ -109,5 +110,16 @@ function init() {
 				}
 			});
 		});
+
+		fixGradients();
+	});
+}
+
+function fixGradients() {
+	document.querySelectorAll('linearGradient').forEach((gradient: SVGLinearGradientElement) => {
+		gradient.setAttribute('x1', '0%');
+		gradient.setAttribute('x2', '0%');
+		gradient.setAttribute('y1', '100%');
+		gradient.setAttribute('y2', '0%');
 	});
 }

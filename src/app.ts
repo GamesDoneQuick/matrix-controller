@@ -1,5 +1,3 @@
-'use strict';
-
 // Native
 import * as http from 'http';
 // Packages

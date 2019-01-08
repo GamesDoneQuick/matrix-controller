@@ -1,3 +1,4 @@
+///<reference lib="dom"/>
 const PAINT_STYLE = {
     stroke: 'white',
     strokeWidth: 12
@@ -96,6 +97,15 @@ function init() {
                 }
             });
         });
+        fixGradients();
+    });
+}
+function fixGradients() {
+    document.querySelectorAll('linearGradient').forEach((gradient) => {
+        gradient.setAttribute('x1', '0%');
+        gradient.setAttribute('x2', '0%');
+        gradient.setAttribute('y1', '100%');
+        gradient.setAttribute('y2', '0%');
     });
 }
 //# sourceMappingURL=app.js.map
