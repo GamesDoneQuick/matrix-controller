@@ -26,17 +26,9 @@
 ## Usage
 
 - Connect your computer to both matrices via serial.
-- Configure the program to use your serial ports. You can use environment variables, command line arguments, or a `config.json` (in the root dir of the app) to configure this program.
+- (Optional) Configure the program using environment variables, command line arguments, or a `config.json` (in the root dir of the app).
 	- [See the available config parameters here](https://github.com/GamesDoneQuick/matrix-controller/blob/master/src/config.ts).
-	- Example JSON config:
-	
-	```json
-	{
-      "hdmiSerialPath": "COM1",
-      "componentSerialPath": "COM5"
-	}
-	```
-- Run the program:
+- Run the program (it will automatically discover the matricies if they are connected):
 
 	```bash
 	npm start
