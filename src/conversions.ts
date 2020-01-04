@@ -110,18 +110,6 @@ export function virtualOutputToComponentOutput(virtualOutput: VIRTUAL_OUT, _virt
 }
 
 export function virtualInputToHdmiInput(virtualOutput: VIRTUAL_OUT, virtualInput: VIRTUAL_IN): HDMI_IN {
-	if (virtualOutput === VIRTUAL_OUT.STREAM_1) {
-		return HDMI_IN.OSSC_1;
-	}
-	if (virtualOutput === VIRTUAL_OUT.STREAM_2) {
-		return HDMI_IN.OSSC_2;
-	}
-	if (virtualOutput === VIRTUAL_OUT.STREAM_3) {
-		return HDMI_IN.OSSC_3;
-	}
-	if (virtualOutput === VIRTUAL_OUT.STREAM_4) {
-		return HDMI_IN.OSSC_4;
-	}
 	if (virtualInput === VIRTUAL_IN.HDMI_1) {
 		return HDMI_IN.HD_1;
 	}
@@ -133,6 +121,18 @@ export function virtualInputToHdmiInput(virtualOutput: VIRTUAL_OUT, virtualInput
 	}
 	if (virtualInput === VIRTUAL_IN.HDMI_4) {
 		return HDMI_IN.HD_4;
+	}
+	if (virtualOutput === VIRTUAL_OUT.STREAM_1) {
+		return HDMI_IN.OSSC_1;
+	}
+	if (virtualOutput === VIRTUAL_OUT.STREAM_2) {
+		return HDMI_IN.OSSC_2;
+	}
+	if (virtualOutput === VIRTUAL_OUT.STREAM_3) {
+		return HDMI_IN.OSSC_3;
+	}
+	if (virtualOutput === VIRTUAL_OUT.STREAM_4) {
+		return HDMI_IN.OSSC_4;
 	}
 	return HDMI_IN.NULL;
 }
