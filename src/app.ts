@@ -80,7 +80,7 @@ io.on('connection', socket => {
 
 			const routedHDMI = hdmiMatrix.setOutput(
 				virtualOutputToHdmiOutput(output),
-				virtualInputToHdmiInput(input)
+				virtualInputToHdmiInput(output, input)
 			);
 
 			if (!routedComponent || !routedHDMI) {
