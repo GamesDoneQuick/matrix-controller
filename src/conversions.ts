@@ -134,6 +134,30 @@ export function virtualInputToHdmiInput(virtualOutput: VIRTUAL_OUT, virtualInput
 	if (virtualOutput === VIRTUAL_OUT.STREAM_4) {
 		return HDMI_IN.OSSC_4;
 	}
+
+	// If we are here, then virtualInput is a Component or SCART input.
+	if (virtualOutput === VIRTUAL_OUT.LCD_1 || virtualOutput === VIRTUAL_OUT.LCD_2 || virtualOutput === VIRTUAL_OUT.LCD_3 || virtualOutput === VIRTUAL_OUT.LCD_4) {
+		// Find what OSSC this signal is going to,
+		// and route that to this LCD.
+		return foo(virtualInputToComponentInput(virtualInput));
+	}
+	return HDMI_IN.NULL;
+}
+
+function foo(compInput: COMP_IN): HDMI_IN {
+	if (componentMatrix.state.outputs[COMP_OUT.OSSC_1] === compInput) {
+		return HDMI_IN.OSSC_1;
+	}
+	if (componentMatrix.state.outputs[COMP_OUT.OSSC_2] === compInput) {
+		return HDMI_IN.OSSC_2;
+	}
+	if (componentMatrix.state.outputs[COMP_OUT.OSSC_3] === compInput) {
+		return HDMI_IN.OSSC_3;
+	}
+	if (componentMatrix.state.outputs[COMP_OUT.OSSC_4] === compInput) {
+		return HDMI_IN.OSSC_4;
+	}
+
 	return HDMI_IN.NULL;
 }
 
