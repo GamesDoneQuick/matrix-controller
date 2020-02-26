@@ -80,7 +80,7 @@ export function virtualOutputToHdmiOutput(virtualOutput: VIRTUAL_OUT): HDMI_OUT 
 	return HDMI_OUT.NULL;
 }
 
-export function virtualOutputToComponentOutput(virtualOutput: VIRTUAL_OUT, virtualInput: VIRTUAL_IN): COMP_OUT {
+export function virtualOutputToComponentOutput(virtualOutput: VIRTUAL_OUT, _virtualInput: VIRTUAL_IN): COMP_OUT {
 	if (virtualOutput === VIRTUAL_OUT.CRT_1) {
 		return COMP_OUT.CRT_1;
 	}
@@ -93,35 +93,23 @@ export function virtualOutputToComponentOutput(virtualOutput: VIRTUAL_OUT, virtu
 	if (virtualOutput === VIRTUAL_OUT.CRT_4) {
 		return COMP_OUT.CRT_4;
 	}
-	if (virtualInput === VIRTUAL_IN.SCART_1 || virtualInput === VIRTUAL_IN.COMP_1) {
+	if (virtualOutput === VIRTUAL_OUT.STREAM_1) {
 		return COMP_OUT.OSSC_1;
 	}
-	if (virtualInput === VIRTUAL_IN.SCART_2 || virtualInput === VIRTUAL_IN.COMP_2) {
+	if (virtualOutput === VIRTUAL_OUT.STREAM_2) {
 		return COMP_OUT.OSSC_2;
 	}
-	if (virtualInput === VIRTUAL_IN.SCART_3 || virtualInput === VIRTUAL_IN.COMP_3) {
+	if (virtualOutput === VIRTUAL_OUT.STREAM_3) {
 		return COMP_OUT.OSSC_3;
 	}
-	if (virtualInput === VIRTUAL_IN.SCART_4 || virtualInput === VIRTUAL_IN.COMP_4) {
+	if (virtualOutput === VIRTUAL_OUT.STREAM_4) {
 		return COMP_OUT.OSSC_4;
 	}
 
 	return COMP_OUT.NULL;
 }
 
-export function virtualInputToHdmiInput(virtualInput: VIRTUAL_IN): HDMI_IN {
-	if (virtualInput === VIRTUAL_IN.SCART_1 || virtualInput === VIRTUAL_IN.COMP_1) {
-		return HDMI_IN.OSSC_1;
-	}
-	if (virtualInput === VIRTUAL_IN.SCART_2 || virtualInput === VIRTUAL_IN.COMP_2) {
-		return HDMI_IN.OSSC_2;
-	}
-	if (virtualInput === VIRTUAL_IN.SCART_3 || virtualInput === VIRTUAL_IN.COMP_3) {
-		return HDMI_IN.OSSC_3;
-	}
-	if (virtualInput === VIRTUAL_IN.SCART_4 || virtualInput === VIRTUAL_IN.COMP_4) {
-		return HDMI_IN.OSSC_4;
-	}
+export function virtualInputToHdmiInput(virtualOutput: VIRTUAL_OUT, virtualInput: VIRTUAL_IN): HDMI_IN {
 	if (virtualInput === VIRTUAL_IN.HDMI_1) {
 		return HDMI_IN.HD_1;
 	}
@@ -134,6 +122,42 @@ export function virtualInputToHdmiInput(virtualInput: VIRTUAL_IN): HDMI_IN {
 	if (virtualInput === VIRTUAL_IN.HDMI_4) {
 		return HDMI_IN.HD_4;
 	}
+	if (virtualOutput === VIRTUAL_OUT.STREAM_1) {
+		return HDMI_IN.OSSC_1;
+	}
+	if (virtualOutput === VIRTUAL_OUT.STREAM_2) {
+		return HDMI_IN.OSSC_2;
+	}
+	if (virtualOutput === VIRTUAL_OUT.STREAM_3) {
+		return HDMI_IN.OSSC_3;
+	}
+	if (virtualOutput === VIRTUAL_OUT.STREAM_4) {
+		return HDMI_IN.OSSC_4;
+	}
+
+	// If we are here, then virtualInput is a Component or SCART input.
+	if (virtualOutput === VIRTUAL_OUT.LCD_1 || virtualOutput === VIRTUAL_OUT.LCD_2 || virtualOutput === VIRTUAL_OUT.LCD_3 || virtualOutput === VIRTUAL_OUT.LCD_4) {
+		// Find what OSSC this signal is going to,
+		// and route that to this LCD.
+		return foo(virtualInputToComponentInput(virtualInput));
+	}
+	return HDMI_IN.NULL;
+}
+
+function foo(compInput: COMP_IN): HDMI_IN {
+	if (componentMatrix.state.outputs[COMP_OUT.OSSC_1] === compInput) {
+		return HDMI_IN.OSSC_1;
+	}
+	if (componentMatrix.state.outputs[COMP_OUT.OSSC_2] === compInput) {
+		return HDMI_IN.OSSC_2;
+	}
+	if (componentMatrix.state.outputs[COMP_OUT.OSSC_3] === compInput) {
+		return HDMI_IN.OSSC_3;
+	}
+	if (componentMatrix.state.outputs[COMP_OUT.OSSC_4] === compInput) {
+		return HDMI_IN.OSSC_4;
+	}
+
 	return HDMI_IN.NULL;
 }
 
